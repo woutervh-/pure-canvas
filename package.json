@@ -4,13 +4,15 @@
   "description": "TODO",
   "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "babel src -d lib",
+    "test": "tsc test/index.ts"
   },
   "author": "Wouter van Heeswijk",
   "license": "MIT",
   "devDependencies": {
-    "babel-cli": "^6.18.0",
-    "babel-preset-es2015": "^6.18.0",
-    "babel-preset-stage-1": "^6.16.0"
+    "typescript": "^2.0.6"
+  },
+  "dependencies": {
+    "rbush": "^2.0.1"
   }
 }
