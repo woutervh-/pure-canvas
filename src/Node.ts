@@ -15,7 +15,9 @@ interface Node {
 
     draw(context: CanvasRenderingContext2D): void;
 
-    intersects(point: Point): boolean;
+    intersection(point: Point): Node;
+
+    toImage(): HTMLCanvasElement;
 }
 
 export default Node;

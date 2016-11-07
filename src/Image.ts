@@ -1,5 +1,5 @@
-import {Point} from './Node';
-import BoundedNode from './BoundedNode';
+import Node, {Point} from './Node';
+import NodeFixedBounds from './NodeFixedBounds';
 
 export interface ImageParameters {
     width: number;
@@ -7,7 +7,7 @@ export interface ImageParameters {
     image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
 }
 
-class Image extends BoundedNode {
+class Image extends NodeFixedBounds {
     private width: number;
     private height: number;
     private image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
@@ -24,24 +24,28 @@ class Image extends BoundedNode {
         const {width, height, image} = this;
         try {
             context.drawImage(image, 0, 0, width, height);
-        } catch (InvalidStateError) {
+        } catch (invalidStateError) {
             // Silently ignore
         }
     }
 
-    intersects({x, y}: Point): boolean {
+    intersection({x, y}: Point): Node {
         const {width, height, image} = this;
 
-        if (!this.pixelArray) {
-            const hitCanvas: HTMLCanvasElement = document.createElement('canvas');
-            hitCanvas.width = width;
-            hitCanvas.height = height;
-            const hitContext: CanvasRenderingContext2D = hitCanvas.getContext('2d');
-            hitContext.drawImage(image, 0, 0, width, height);
-            this.pixelArray = hitContext.getImageData(0, 0, width, height).data;
-        }
+        if (0 <= x && x <= width && 0 <= y && y <= height) {
+            if (!this.pixelArray) {
+                const hitCanvas: HTMLCanvasElement = document.createElement('canvas');
+                hitCanvas.width = width;
+                hitCanvas.height = height;
+                const hitContext: CanvasRenderingContext2D = hitCanvas.getContext('2d');
+                hitContext.drawImage(image, 0, 0, width, height);
+                this.pixelArray = hitContext.getImageData(0, 0, width, height).data;
+            }
 
-        return this.pixelArray[(x + y * width) * 4 + 3] >= 1;
+            if (this.pixelArray[(x + y * width) * 4 + 3] >= 1) {
+                return this;
+            }
+        }
     }
 }
 

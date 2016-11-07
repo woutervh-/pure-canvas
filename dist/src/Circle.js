@@ -4,7 +4,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var BoundedNode_1 = require('./BoundedNode');
+var NodeFixedBounds_1 = require('./NodeFixedBounds');
 var Circle = (function (_super) {
     __extends(Circle, _super);
     function Circle(_a) {
@@ -39,13 +39,15 @@ var Circle = (function (_super) {
         context.fillStyle = oldFillStyle;
         context.lineWidth = oldLineWidth;
     };
-    Circle.prototype.intersects = function (_a) {
+    Circle.prototype.intersection = function (_a) {
         var x = _a.x, y = _a.y;
         var _b = this, radius = _b.radius, _c = _b.lineWidth, lineWidth = _c === void 0 ? 1 : _c;
-        return Math.pow(x, 2) + Math.pow(y, 2) <= Math.pow((radius + lineWidth), 2);
+        if (Math.pow(x, 2) + Math.pow(y, 2) <= Math.pow((radius + lineWidth), 2)) {
+            return this;
+        }
     };
     return Circle;
-}(BoundedNode_1["default"]));
-exports.__esModule = true;
-exports["default"] = Circle;
+}(NodeFixedBounds_1.default));
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = Circle;
 //# sourceMappingURL=Circle.js.map

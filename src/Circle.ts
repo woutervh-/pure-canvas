@@ -1,5 +1,5 @@
-import {Bounds, Point} from './Node';
-import BoundedNode from './BoundedNode';
+import Node, {Bounds, Point} from './Node';
+import NodeFixedBounds from './NodeFixedBounds';
 
 export interface CircleParameters {
     radius: number;
@@ -8,7 +8,7 @@ export interface CircleParameters {
     fillStyle?: string;
 }
 
-class Circle extends BoundedNode {
+class Circle extends NodeFixedBounds {
     private radius: number;
     private lineWidth: number;
     private strokeStyle: string;
@@ -48,9 +48,11 @@ class Circle extends BoundedNode {
         context.lineWidth = oldLineWidth;
     }
 
-    intersects({x, y}: Point): boolean {
+    intersection({x, y}: Point): Node {
         const {radius, lineWidth = 1} = this;
-        return x ** 2 + y ** 2 <= (radius + lineWidth) ** 2;
+        if (x ** 2 + y ** 2 <= (radius + lineWidth) ** 2) {
+            return this;
+        }
     }
 }
 

@@ -5,14 +5,27 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "babel src -d lib",
-    "test": "tsc test/index.ts"
+    "test": "tsc test/index.ts",
+    "examples": "webpack-dev-server --config webpack.config.js --content-base dist/ --hot --inline --host 0.0.0.0"
   },
   "author": "Wouter van Heeswijk",
   "license": "MIT",
   "devDependencies": {
-    "typescript": "^2.0.6"
+    "@types/eventemitter3": "^1.1.29",
+    "@types/react": "^0.14.44",
+    "@types/react-dom": "^0.14.18",
+    "html-webpack-plugin": "^2.24.1",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2",
+    "source-map-loader": "^0.1.5",
+    "ts-loader": "^1.0.0",
+    "typescript": "^2.0.6",
+    "url-loader": "^0.5.7",
+    "webpack": "^1.13.3",
+    "webpack-dev-server": "^1.16.2"
   },
   "dependencies": {
+    "eventemitter3": "^2.0.2",
     "rbush": "^2.0.1"
   }
 }
