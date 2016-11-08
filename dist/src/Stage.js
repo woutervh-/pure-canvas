@@ -52,7 +52,7 @@ var Stage = (function (_super) {
         var point = this.eventToElementCoordinate(event);
         var results = this.tree
             .search({ minX: point.x, minY: point.y, maxX: point.x, maxY: point.y })
-            .sort(function (a, b) { return a.zIndex - b.zIndex; })
+            .sort(function (a, b) { return b.zIndex - a.zIndex; })
             .map(function (indexedNode) {
             var _a = indexedNode.origin, x = _a.x, y = _a.y;
             var transformedPoint = { x: point.x - x, y: point.y - y };

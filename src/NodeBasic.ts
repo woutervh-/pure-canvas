@@ -1,6 +1,8 @@
 import Node, {Bounds, Point} from './Node';
 
 abstract class NodeBasic implements Node {
+    _hitEnabled: boolean = true;
+
     abstract getBounds(): Bounds;
 
     abstract draw(context: CanvasRenderingContext2D): void;
@@ -17,6 +19,14 @@ abstract class NodeBasic implements Node {
     }
 
     abstract index(action: (node: Node, origin: Point, zIndex: number, bounds: Bounds) => void, origin: Point, zIndex: number): void;
+
+    isHitEnabled(): boolean {
+        return this._hitEnabled;
+    }
+
+    setHitEnabled(value: boolean): void {
+        this._hitEnabled = value;
+    }
 }
 
 export default NodeBasic;

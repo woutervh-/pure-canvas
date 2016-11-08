@@ -54,16 +54,20 @@ var Layer = (function (_super) {
         // Visit children in reverse order: the ones drawn last must be checked first
         for (var _i = 0, _a = this.children.slice().reverse(); _i < _a.length; _i++) {
             var child = _a[_i];
-            var intersection = child.intersection(point);
-            if (!!intersection) {
-                return intersection;
+            if (child.isHitEnabled()) {
+                var intersection = child.intersection(point);
+                if (!!intersection) {
+                    return intersection;
+                }
             }
         }
     };
     Layer.prototype.index = function (action, origin, zIndex) {
         for (var _i = 0, _a = this.children; _i < _a.length; _i++) {
             var child = _a[_i];
-            child.index(action, origin, zIndex++);
+            if (child.isHitEnabled()) {
+                child.index(action, origin, zIndex++);
+            }
         }
     };
     return Layer;

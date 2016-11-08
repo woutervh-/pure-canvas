@@ -20,6 +20,10 @@ interface Node {
     toImage(): HTMLCanvasElement;
 
     index(action: (node: Node, origin: Point, zIndex: number, bounds: Bounds) => void, origin: Point, zIndex: number): void;
+
+    isHitEnabled(): boolean;
+
+    setHitEnabled(value: boolean): void;
 }
 
 export default Node;

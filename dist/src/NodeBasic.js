@@ -1,6 +1,7 @@
 "use strict";
 var NodeBasic = (function () {
     function NodeBasic() {
+        this._hitEnabled = true;
     }
     NodeBasic.prototype.toImage = function () {
         var _a = this.getBounds(), x = _a.x, y = _a.y, width = _a.width, height = _a.height;
@@ -9,6 +10,12 @@ var NodeBasic = (function () {
         canvas.height = height;
         this.draw(canvas.getContext('2d'));
         return canvas;
+    };
+    NodeBasic.prototype.isHitEnabled = function () {
+        return this._hitEnabled;
+    };
+    NodeBasic.prototype.setHitEnabled = function (value) {
+        this._hitEnabled = value;
     };
     return NodeBasic;
 }());

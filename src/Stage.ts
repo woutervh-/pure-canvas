@@ -50,7 +50,7 @@ export default class Stage extends EventEmitter implements NodeCollection {
 
         const results = this.tree
             .search({minX: point.x, minY: point.y, maxX: point.x, maxY: point.y})
-            .sort((a: IndexedNode, b: IndexedNode) => a.zIndex - b.zIndex)
+            .sort((a: IndexedNode, b: IndexedNode) => b.zIndex - a.zIndex)
             .map((indexedNode: IndexedNode) => {
                 const {x, y} = indexedNode.origin;
                 const transformedPoint = {x: point.x - x, y: point.y - y};

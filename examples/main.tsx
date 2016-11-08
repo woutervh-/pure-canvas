@@ -3,6 +3,7 @@ import * as ReactDOM from 'react-dom';
 import Stage from '../src/Stage';
 import Circle from '../src/Circle';
 import CanvasImage from '../src/Image';
+import Line from '../src/Line';
 import Translate from '../src/Translate';
 import colors from './colors';
 import * as triangle from './triangle.svg';
@@ -14,6 +15,17 @@ function getRandomColor() {
 
 class IdentifiedImage extends CanvasImage {
     id: number;
+    type: string = 'image';
+}
+
+class IdentifiedCircle extends Circle {
+    id: number;
+    type: string = 'circle';
+}
+
+class IdentifiedLine extends Line {
+    id: number;
+    type: string = 'line';
 }
 
 class App extends React.Component<{}, {}> {
@@ -25,12 +37,24 @@ class App extends React.Component<{}, {}> {
             const hoverLayer = new Translate();
             const cachedLayer = new LayerCached();
 
+            const hoverImage = new CanvasImage({width: 24, height: 24, image: triangleImage});
+            const hoverCircle = new Circle({radius: 10, fillStyle: 'white'});
+            const hoverLine = new Line({x1: 0, y1: 0, x2: 10, y2: 10, lineWidth: 5});
+            hoverImage.setHitEnabled(false);
+            hoverCircle.setHitEnabled(false);
+            hoverLine.setHitEnabled(false);
+
             for (let i = 0; i < 400; i++) {
-                // const circle = new Circle({radius: 10, fillStyle: getRandomColor()});
                 const image = new IdentifiedImage({width: 20, height: 20, image: triangleImage});
+                const circle = new IdentifiedCircle({radius: 8, fillStyle: getRandomColor()});
+                const line = new IdentifiedLine({x1: 0, y1: 0, x2: 15, y2: 15, lineWidth: 3});
                 image.id = i;
+                circle.id = i;
+                line.id = i;
                 const layer = new Translate({x: (i % 20) * 20, y: Math.floor(i / 20) * 20});
                 layer.add(image);
+                layer.add(circle);
+                layer.add(line);
                 cachedLayer.add(layer);
             }
 
@@ -40,10 +64,26 @@ class App extends React.Component<{}, {}> {
 
             stage.on('mousemove', node => {
                 hoverLayer.removeAll();
-                if (node && node.id) {
-                    hoverLayer.x = (node.id % 20) * 20 - 2;
-                    hoverLayer.y = Math.floor(node.id / 20) * 20 - 2;
-                    hoverLayer.add(new CanvasImage({width: 24, height: 24, image: triangleImage}));
+                if (node) {
+                    switch (node.type) {
+                        case 'image':
+                            hoverLayer.x = (node.id % 20) * 20 - 2;
+                            hoverLayer.y = Math.floor(node.id / 20) * 20 - 2;
+                            hoverLayer.add(hoverImage);
+                            break;
+                        case 'circle':
+                            hoverLayer.x = (node.id % 20) * 20;
+                            hoverLayer.y = Math.floor(node.id / 20) * 20;
+                            hoverLayer.add(hoverCircle);
+                            break;
+                        case 'line':
+                            hoverLayer.x = (node.id % 20) * 20;
+                            hoverLayer.y = Math.floor(node.id / 20) * 20;
+                            hoverLayer.add(hoverLine);
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 stage.render();
             });

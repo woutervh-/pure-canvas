@@ -1,8 +1,6 @@
 import Node, {Point, Bounds} from './Node';
 import NodeBasic from './NodeBasic';
 
-const origin = {x: 0, y: 0};
-
 abstract class NodeLeaf extends NodeBasic {
     abstract getBounds(): Bounds;
 

@@ -15,10 +15,10 @@ class Circle extends NodeFixedBounds {
     private fillStyle: string;
 
     constructor({radius, lineWidth = 1, strokeStyle = 'rgba(0, 0, 0, 1)', fillStyle = 'rgba(255, 255, 255, 1)'}: CircleParameters) {
-        const minX = Math.floor(-radius / 2 - lineWidth / 2);
-        const maxX = Math.ceil(radius / 2 + lineWidth / 2);
-        const minY = Math.floor(-radius / 2 - lineWidth / 2);
-        const maxY = Math.ceil(radius / 2 + lineWidth / 2);
+        const minX = Math.floor(-radius - lineWidth);
+        const maxX = Math.ceil(radius + lineWidth);
+        const minY = Math.floor(-radius - lineWidth);
+        const maxY = Math.ceil(radius + lineWidth);
         const bounds: Bounds = {x: minX, y: minY, width: maxX - minX, height: maxY - minY};
 
         super(bounds);
@@ -29,7 +29,7 @@ class Circle extends NodeFixedBounds {
     }
 
     draw(context: CanvasRenderingContext2D): void {
-        const {radius, strokeStyle = 'rgba(0, 0, 0, 1)', lineWidth = 1, fillStyle = 'rgba(255, 255, 255, 1)'} = this;
+        const {radius, strokeStyle, lineWidth, fillStyle} = this;
         const oldStrokeStyle = context.strokeStyle;
         const oldFillStyle = context.fillStyle;
         const oldLineWidth = context.lineWidth;
@@ -49,7 +49,7 @@ class Circle extends NodeFixedBounds {
     }
 
     intersection({x, y}: Point): Node {
-        const {radius, lineWidth = 1} = this;
+        const {radius, lineWidth} = this;
         if (x ** 2 + y ** 2 <= (radius + lineWidth) ** 2) {
             return this;
         }

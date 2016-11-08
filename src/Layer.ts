@@ -52,16 +52,20 @@ class Layer extends NodeBasic implements NodeCollection {
     intersection(point: Point): Node {
         // Visit children in reverse order: the ones drawn last must be checked first
         for (const child of this.children.slice().reverse()) {
-            const intersection = child.intersection(point);
-            if (!!intersection) {
-                return intersection;
+            if (child.isHitEnabled()) {
+                const intersection = child.intersection(point);
+                if (!!intersection) {
+                    return intersection;
+                }
             }
         }
     }
 
     index(action: (node: Node, origin: Point, zIndex: number, bounds: Bounds) => void, origin: Point, zIndex: number): void {
         for (const child of this.children) {
-            child.index(action, origin, zIndex++);
+            if (child.isHitEnabled()) {
+                child.index(action, origin, zIndex++);
+            }
         }
     }
 }

@@ -5,7 +5,6 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var NodeBasic_1 = require('./NodeBasic');
-var origin = { x: 0, y: 0 };
 var NodeLeaf = (function (_super) {
     __extends(NodeLeaf, _super);
     function NodeLeaf() {
