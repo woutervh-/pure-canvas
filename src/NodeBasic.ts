@@ -1,5 +1,4 @@
 import Node, {Bounds, Point} from './Node';
-import * as rbush from 'rbush';
 
 abstract class NodeBasic implements Node {
     abstract getBounds(): Bounds;
@@ -17,7 +16,7 @@ abstract class NodeBasic implements Node {
         return canvas;
     }
 
-    abstract index(action: (node: Node, origin: Point, bbox: rbush.BBox) => void): void;
+    abstract index(action: (node: Node, origin: Point, zIndex: number, bounds: Bounds) => void, origin: Point, zIndex: number): void;
 }
 
 export default NodeBasic;

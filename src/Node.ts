@@ -1,5 +1,3 @@
-import * as rbush from 'rbush';
-
 export interface Bounds {
     x: number;
     y: number;
@@ -21,7 +19,7 @@ interface Node {
 
     toImage(): HTMLCanvasElement;
 
-    index(action: (node: Node, origin: Point, bbox: rbush.BBox) => void): void;
+    index(action: (node: Node, origin: Point, zIndex: number, bounds: Bounds) => void, origin: Point, zIndex: number): void;
 }
 
 export default Node;

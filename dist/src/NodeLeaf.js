@@ -11,9 +11,8 @@ var NodeLeaf = (function (_super) {
     function NodeLeaf() {
         _super.apply(this, arguments);
     }
-    NodeLeaf.prototype.index = function (action) {
-        var _a = this.getBounds(), x = _a.x, y = _a.y, width = _a.width, height = _a.height;
-        action(this, origin, { minX: x, minY: y, maxX: x + width, maxY: y + height });
+    NodeLeaf.prototype.index = function (action, origin, zIndex) {
+        action(this, origin, zIndex, this.getBounds());
     };
     return NodeLeaf;
 }(NodeBasic_1.default));

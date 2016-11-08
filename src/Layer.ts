@@ -1,7 +1,6 @@
 import Node, {Point, Bounds} from './Node';
 import NodeCollection from './NodeCollection';
 import NodeBasic from './NodeBasic';
-import * as rbush from 'rbush';
 
 class Layer extends NodeBasic implements NodeCollection {
     private children: Array<Node> = [];
@@ -60,9 +59,9 @@ class Layer extends NodeBasic implements NodeCollection {
         }
     }
 
-    index(action: (node: Node, origin: Point, bbox: rbush.BBox) => void): void {
+    index(action: (node: Node, origin: Point, zIndex: number, bounds: Bounds) => void, origin: Point, zIndex: number): void {
         for (const child of this.children) {
-            child.index(action);
+            child.index(action, origin, zIndex++);
         }
     }
 }

@@ -1,4 +1,4 @@
-import Node, {Point} from './Node';
+import Node, {Bounds, Point} from './Node';
 import NodeCollection from './NodeCollection';
 import {EventEmitter} from 'eventemitter3';
 import Layer from './Layer';
@@ -7,6 +7,7 @@ import * as rbush from 'rbush';
 interface IndexedNode extends rbush.BBox {
     origin: Point;
     node: Node;
+    zIndex: number;
 }
 
 export default class Stage extends EventEmitter implements NodeCollection {
@@ -47,10 +48,9 @@ export default class Stage extends EventEmitter implements NodeCollection {
     private emitHitEvent(name: string, event: MouseEvent): void {
         const point = this.eventToElementCoordinate(event);
 
-        // TODO: sort by reverse draw order
-
         const results = this.tree
             .search({minX: point.x, minY: point.y, maxX: point.x, maxY: point.y})
+            .sort((a: IndexedNode, b: IndexedNode) => a.zIndex - b.zIndex)
             .map((indexedNode: IndexedNode) => {
                 const {x, y} = indexedNode.origin;
                 const transformedPoint = {x: point.x - x, y: point.y - y};
@@ -82,9 +82,9 @@ export default class Stage extends EventEmitter implements NodeCollection {
         this.internalLayer.draw(this.context);
 
         this.tree.clear();
-        this.internalLayer.index((node: Node, origin: Point, {minX, minY, maxX, maxY}: rbush.BBox) => {
-            this.tree.insert({minX, minY, maxX, maxY, origin, node});
-        });
+        this.internalLayer.index((node: Node, origin: Point, zIndex: number, {x, y, width, height}: Bounds) => {
+            this.tree.insert({minX: x, minY: y, maxX: x + width, maxY: y + height, origin, node, zIndex});
+        }, {x: 0, y: 0}, 0);
     }
 
     add(node: Node): number {

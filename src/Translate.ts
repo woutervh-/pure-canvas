@@ -1,6 +1,5 @@
 import Layer from './Layer';
 import Node, {Bounds, Point} from './Node';
-import * as rbush from 'rbush';
 
 export default class Translate extends Layer {
     private _x: number;
@@ -29,20 +28,11 @@ export default class Translate extends Layer {
         return super.intersection(translatedPoint);
     }
 
-    index(action: (node: Node, origin: Point, bbox: rbush.BBox) => void): void {
-        super.index((node: Node, {x, y}: Point, {minX, minY, maxX, maxY}: rbush.BBox) => {
-            action(
-                node,
-                {
-                    x: x + this._x, y: y + this._y
-                }, {
-                    minX: minX + this._x,
-                    minY: minY + this._y,
-                    maxX: maxX + this._x,
-                    maxY: maxY + this._y
-                }
-            );
-        });
+    index(action: (node: Node, origin: Point, zIndex: number, bounds: Bounds) => void, origin: Point, zIndex: number): void {
+        const shifted = {x: origin.x + this._x, y: origin.y + this._y};
+        super.index((node: Node, origin: Point, zIndex: number, {x, y, width, height}: Bounds) => {
+            action(node, origin, zIndex, {x: x + this._x, y: y + this._y, width, height});
+        }, shifted, zIndex);
     }
 
     get x(): number {

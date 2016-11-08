@@ -1,6 +1,5 @@
 import Node, {Point, Bounds} from './Node';
 import NodeBasic from './NodeBasic';
-import * as rbush from 'rbush';
 
 const origin = {x: 0, y: 0};
 
@@ -11,9 +10,8 @@ abstract class NodeLeaf extends NodeBasic {
 
     abstract intersection(point: Point): Node;
 
-    index(action: (node: Node, origin: Point, bbox: rbush.BBox) => void): void {
-        const {x, y, width, height} = this.getBounds();
-        action(this, origin, {minX: x, minY: y, maxX: x + width, maxY: y + height});
+    index(action: (node: Node, origin: Point, zIndex: number, bounds: Bounds) => void, origin: Point, zIndex: number): void {
+        action(this, origin, zIndex, this.getBounds());
     }
 }
 

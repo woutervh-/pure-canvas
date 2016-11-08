@@ -50,9 +50,9 @@ var Stage = (function (_super) {
     };
     Stage.prototype.emitHitEvent = function (name, event) {
         var point = this.eventToElementCoordinate(event);
-        // TODO: sort by reverse draw order
         var results = this.tree
             .search({ minX: point.x, minY: point.y, maxX: point.x, maxY: point.y })
+            .sort(function (a, b) { return a.zIndex - b.zIndex; })
             .map(function (indexedNode) {
             var _a = indexedNode.origin, x = _a.x, y = _a.y;
             var transformedPoint = { x: point.x - x, y: point.y - y };
@@ -66,10 +66,10 @@ var Stage = (function (_super) {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.internalLayer.draw(this.context);
         this.tree.clear();
-        this.internalLayer.index(function (node, origin, _a) {
-            var minX = _a.minX, minY = _a.minY, maxX = _a.maxX, maxY = _a.maxY;
-            _this.tree.insert({ minX: minX, minY: minY, maxX: maxX, maxY: maxY, origin: origin, node: node });
-        });
+        this.internalLayer.index(function (node, origin, zIndex, _a) {
+            var x = _a.x, y = _a.y, width = _a.width, height = _a.height;
+            _this.tree.insert({ minX: x, minY: y, maxX: x + width, maxY: y + height, origin: origin, node: node, zIndex: zIndex });
+        }, { x: 0, y: 0 }, 0);
     };
     Stage.prototype.add = function (node) {
         return this.internalLayer.add(node);

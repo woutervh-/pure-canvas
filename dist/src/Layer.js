@@ -60,10 +60,10 @@ var Layer = (function (_super) {
             }
         }
     };
-    Layer.prototype.index = function (action) {
+    Layer.prototype.index = function (action, origin, zIndex) {
         for (var _i = 0, _a = this.children; _i < _a.length; _i++) {
             var child = _a[_i];
-            child.index(action);
+            child.index(action, origin, zIndex++);
         }
     };
     return Layer;
