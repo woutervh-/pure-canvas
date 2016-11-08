@@ -1,6 +1,7 @@
 import Node, {Bounds, Point} from './Node';
+import * as rbush from 'rbush';
 
-abstract class NodeImageable implements Node {
+abstract class NodeBasic implements Node {
     abstract getBounds(): Bounds;
 
     abstract draw(context: CanvasRenderingContext2D): void;
@@ -15,6 +16,8 @@ abstract class NodeImageable implements Node {
         this.draw(canvas.getContext('2d'));
         return canvas;
     }
+
+    abstract index(action: (node: Node, origin: Point, bbox: rbush.BBox) => void): void;
 }
 
-export default NodeImageable;
+export default NodeBasic;

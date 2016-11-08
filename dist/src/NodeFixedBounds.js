@@ -4,7 +4,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var NodeImageable_1 = require('./NodeImageable');
+var NodeLeaf_1 = require('./NodeLeaf');
 var NodeFixedBounds = (function (_super) {
     __extends(NodeFixedBounds, _super);
     function NodeFixedBounds(bounds) {
@@ -15,7 +15,7 @@ var NodeFixedBounds = (function (_super) {
         return this.bounds;
     };
     return NodeFixedBounds;
-}(NodeImageable_1.default));
+}(NodeLeaf_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = NodeFixedBounds;
 //# sourceMappingURL=NodeFixedBounds.js.map

@@ -4,7 +4,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var NodeImageable_1 = require('./NodeImageable');
+var NodeBasic_1 = require('./NodeBasic');
 var Layer = (function (_super) {
     __extends(Layer, _super);
     function Layer() {
@@ -32,17 +32,6 @@ var Layer = (function (_super) {
         }
         return { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
     };
-    Layer.prototype.intersection = function (point) {
-        // TODO: use rbush to speed things up
-        // Visit children in reverse order: the ones drawn the last are checked the first
-        for (var _i = 0, _a = this.children.slice().reverse(); _i < _a.length; _i++) {
-            var child = _a[_i];
-            var intersection = child.intersection(point);
-            if (!!intersection) {
-                return intersection;
-            }
-        }
-    };
     Layer.prototype.add = function (node) {
         this.children.push(node);
         return this.children.length - 1;
@@ -61,9 +50,24 @@ var Layer = (function (_super) {
     Layer.prototype.count = function () {
         return this.children.length;
     };
+    Layer.prototype.intersection = function (point) {
+        // Visit children in reverse order: the ones drawn last must be checked first
+        for (var _i = 0, _a = this.children.slice().reverse(); _i < _a.length; _i++) {
+            var child = _a[_i];
+            var intersection = child.intersection(point);
+            if (!!intersection) {
+                return intersection;
+            }
+        }
+    };
+    Layer.prototype.index = function (action) {
+        for (var _i = 0, _a = this.children; _i < _a.length; _i++) {
+            var child = _a[_i];
+            child.index(action);
+        }
+    };
     return Layer;
-}(NodeImageable_1.default));
+}(NodeBasic_1.default));
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Layer;
-;
 //# sourceMappingURL=Layer.js.map

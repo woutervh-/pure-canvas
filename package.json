@@ -12,6 +12,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/eventemitter3": "^1.1.29",
+    "@types/rbush": "^2.0.2",
     "@types/react": "^0.14.44",
     "@types/react-dom": "^0.14.18",
     "html-webpack-plugin": "^2.24.1",

@@ -1,9 +1,9 @@
-import rbush from 'rbush';
 import Node, {Point, Bounds} from './Node';
 import NodeCollection from './NodeCollection';
-import NodeImageable from './NodeImageable';
+import NodeBasic from './NodeBasic';
+import * as rbush from 'rbush';
 
-export default class Layer extends NodeImageable implements NodeCollection {
+class Layer extends NodeBasic implements NodeCollection {
     private children: Array<Node> = [];
 
     draw(context: CanvasRenderingContext2D): void {
@@ -29,17 +29,6 @@ export default class Layer extends NodeImageable implements NodeCollection {
         return {x: minX, y: minY, width: maxX - minX, height: maxY - minY};
     }
 
-    intersection(point: Point): Node {
-        // TODO: use rbush to speed things up
-        // Visit children in reverse order: the ones drawn the last are checked the first
-        for (const child of this.children.slice().reverse()) {
-            const intersection = child.intersection(point);
-            if (!!intersection) {
-                return intersection;
-            }
-        }
-    }
-
     add(node: Node): number {
         this.children.push(node);
         return this.children.length - 1;
@@ -60,4 +49,22 @@ export default class Layer extends NodeImageable implements NodeCollection {
     count(): number {
         return this.children.length;
     }
-};
+
+    intersection(point: Point): Node {
+        // Visit children in reverse order: the ones drawn last must be checked first
+        for (const child of this.children.slice().reverse()) {
+            const intersection = child.intersection(point);
+            if (!!intersection) {
+                return intersection;
+            }
+        }
+    }
+
+    index(action: (node: Node, origin: Point, bbox: rbush.BBox) => void): void {
+        for (const child of this.children) {
+            child.index(action);
+        }
+    }
+}
+
+export default Layer;

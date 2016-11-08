@@ -26,6 +26,21 @@ var Translate = (function (_super) {
         var translatedPoint = { x: point.x - this._x, y: point.y - this._y };
         return _super.prototype.intersection.call(this, translatedPoint);
     };
+    Translate.prototype.index = function (action) {
+        var _this = this;
+        _super.prototype.index.call(this, function (node, _a, _b) {
+            var x = _a.x, y = _a.y;
+            var minX = _b.minX, minY = _b.minY, maxX = _b.maxX, maxY = _b.maxY;
+            action(node, {
+                x: x + _this._x, y: y + _this._y
+            }, {
+                minX: minX + _this._x,
+                minY: minY + _this._y,
+                maxX: maxX + _this._x,
+                maxY: maxY + _this._y
+            });
+        });
+    };
     Object.defineProperty(Translate.prototype, "x", {
         get: function () {
             return this._x;

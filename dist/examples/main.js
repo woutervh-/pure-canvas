@@ -11,6 +11,7 @@ var Image_1 = require('../src/Image');
 var Translate_1 = require('../src/Translate');
 var colors_1 = require('./colors');
 var triangle = require('./triangle.svg');
+var LayerCached_1 = require('../src/LayerCached');
 function getRandomColor() {
     return colors_1.default[Math.floor(Math.random() * colors_1.default.length)];
 }
@@ -31,19 +32,20 @@ var App = (function (_super) {
         function onImageLoaded() {
             var stage = new Stage_1.default(canvas);
             var hoverLayer = new Translate_1.default();
+            var cachedLayer = new LayerCached_1.default();
             for (var i = 0; i < 400; i++) {
                 // const circle = new Circle({radius: 10, fillStyle: getRandomColor()});
                 var image = new IdentifiedImage({ width: 20, height: 20, image: triangleImage });
                 image.id = i;
                 var layer = new Translate_1.default({ x: (i % 20) * 20, y: Math.floor(i / 20) * 20 });
-                stage.add(layer);
                 layer.add(image);
+                cachedLayer.add(layer);
             }
+            stage.add(cachedLayer);
             stage.add(hoverLayer);
             stage.render();
             stage.on('mousemove', function (node) {
                 hoverLayer.removeAll();
-                console.log(node);
                 if (node && node.id) {
                     hoverLayer.x = (node.id % 20) * 20 - 2;
                     hoverLayer.y = Math.floor(node.id / 20) * 20 - 2;

@@ -1,7 +1,7 @@
 import {Bounds} from './Node';
-import NodeImageable from './NodeImageable';
+import NodeLeaf from './NodeLeaf';
 
-abstract class NodeFixedBounds extends NodeImageable {
+abstract class NodeFixedBounds extends NodeLeaf {
     private bounds: Bounds;
 
     constructor(bounds: Bounds) {

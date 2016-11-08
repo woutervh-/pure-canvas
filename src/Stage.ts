@@ -1,7 +1,13 @@
-import Node from './Node';
+import Node, {Point} from './Node';
 import NodeCollection from './NodeCollection';
 import {EventEmitter} from 'eventemitter3';
 import Layer from './Layer';
+import * as rbush from 'rbush';
+
+interface IndexedNode extends rbush.BBox {
+    origin: Point;
+    node: Node;
+}
 
 export default class Stage extends EventEmitter implements NodeCollection {
     private canvas: HTMLCanvasElement;
@@ -9,6 +15,8 @@ export default class Stage extends EventEmitter implements NodeCollection {
     private context: CanvasRenderingContext2D;
 
     private internalLayer: Layer = new Layer();
+
+    private tree: rbush.RBush<IndexedNode> = rbush<IndexedNode>();
 
     constructor(canvas: HTMLCanvasElement) {
         super();
@@ -38,8 +46,19 @@ export default class Stage extends EventEmitter implements NodeCollection {
 
     private emitHitEvent(name: string, event: MouseEvent): void {
         const point = this.eventToElementCoordinate(event);
-        const result = this.internalLayer.intersection(point);
-        this.emit(name, result, event);
+
+        // TODO: sort by reverse draw order
+
+        const results = this.tree
+            .search({minX: point.x, minY: point.y, maxX: point.x, maxY: point.y})
+            .map((indexedNode: IndexedNode) => {
+                const {x, y} = indexedNode.origin;
+                const transformedPoint = {x: point.x - x, y: point.y - y};
+                return indexedNode.node.intersection(transformedPoint);
+            })
+            .filter(Boolean);
+
+        this.emit(name, results[0], event);
     }
 
     private handleMouseDown = (event: MouseEvent) => {
@@ -61,6 +80,11 @@ export default class Stage extends EventEmitter implements NodeCollection {
     render(): void {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.internalLayer.draw(this.context);
+
+        this.tree.clear();
+        this.internalLayer.index((node: Node, origin: Point, {minX, minY, maxX, maxY}: rbush.BBox) => {
+            this.tree.insert({minX, minY, maxX, maxY, origin, node});
+        });
     }
 
     add(node: Node): number {

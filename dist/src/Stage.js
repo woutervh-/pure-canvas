@@ -6,12 +6,14 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var eventemitter3_1 = require('eventemitter3');
 var Layer_1 = require('./Layer');
+var rbush = require('rbush');
 var Stage = (function (_super) {
     __extends(Stage, _super);
     function Stage(canvas) {
         var _this = this;
         _super.call(this);
         this.internalLayer = new Layer_1.default();
+        this.tree = rbush();
         this.handleMouseDown = function (event) {
             _this.emitHitEvent('mousedown', event);
         };
@@ -48,12 +50,26 @@ var Stage = (function (_super) {
     };
     Stage.prototype.emitHitEvent = function (name, event) {
         var point = this.eventToElementCoordinate(event);
-        var result = this.internalLayer.intersection(point);
-        this.emit(name, result, event);
+        // TODO: sort by reverse draw order
+        var results = this.tree
+            .search({ minX: point.x, minY: point.y, maxX: point.x, maxY: point.y })
+            .map(function (indexedNode) {
+            var _a = indexedNode.origin, x = _a.x, y = _a.y;
+            var transformedPoint = { x: point.x - x, y: point.y - y };
+            return indexedNode.node.intersection(transformedPoint);
+        })
+            .filter(Boolean);
+        this.emit(name, results[0], event);
     };
     Stage.prototype.render = function () {
+        var _this = this;
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.internalLayer.draw(this.context);
+        this.tree.clear();
+        this.internalLayer.index(function (node, origin, _a) {
+            var minX = _a.minX, minY = _a.minY, maxX = _a.maxX, maxY = _a.maxY;
+            _this.tree.insert({ minX: minX, minY: minY, maxX: maxX, maxY: maxY, origin: origin, node: node });
+        });
     };
     Stage.prototype.add = function (node) {
         return this.internalLayer.add(node);

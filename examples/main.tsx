@@ -6,6 +6,7 @@ import CanvasImage from '../src/Image';
 import Translate from '../src/Translate';
 import colors from './colors';
 import * as triangle from './triangle.svg';
+import LayerCached from '../src/LayerCached';
 
 function getRandomColor() {
     return colors[Math.floor(Math.random() * colors.length)];
@@ -22,22 +23,23 @@ class App extends React.Component<{}, {}> {
         function onImageLoaded() {
             const stage = new Stage(canvas);
             const hoverLayer = new Translate();
+            const cachedLayer = new LayerCached();
 
             for (let i = 0; i < 400; i++) {
                 // const circle = new Circle({radius: 10, fillStyle: getRandomColor()});
                 const image = new IdentifiedImage({width: 20, height: 20, image: triangleImage});
                 image.id = i;
                 const layer = new Translate({x: (i % 20) * 20, y: Math.floor(i / 20) * 20});
-                stage.add(layer);
                 layer.add(image);
+                cachedLayer.add(layer);
             }
 
+            stage.add(cachedLayer);
             stage.add(hoverLayer);
             stage.render();
 
             stage.on('mousemove', node => {
                 hoverLayer.removeAll();
-                console.log(node);
                 if (node && node.id) {
                     hoverLayer.x = (node.id % 20) * 20 - 2;
                     hoverLayer.y = Math.floor(node.id / 20) * 20 - 2;
