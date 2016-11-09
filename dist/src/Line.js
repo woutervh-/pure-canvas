@@ -9,11 +9,11 @@ var Line = (function (_super) {
     __extends(Line, _super);
     function Line(_a) {
         var x1 = _a.x1, y1 = _a.y1, x2 = _a.x2, y2 = _a.y2, _b = _a.strokeStyle, strokeStyle = _b === void 0 ? 'rgba(0, 0, 0, 1)' : _b, _c = _a.lineWidth, lineWidth = _c === void 0 ? 1 : _c, _d = _a.lineCap, lineCap = _d === void 0 ? 'butt' : _d;
-        var minX = Math.floor(Math.min(x1, x2) - lineWidth / 2);
-        var maxX = Math.ceil(Math.max(x1, x2) + lineWidth / 2);
-        var minY = Math.floor(Math.min(y1, y2) - lineWidth / 2);
-        var maxY = Math.ceil(Math.max(y1, y2) + lineWidth / 2);
-        var bounds = { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
+        var minX = Math.min(x1, x2) - lineWidth / 2;
+        var maxX = Math.max(x1, x2) + lineWidth / 2;
+        var minY = Math.min(y1, y2) - lineWidth / 2;
+        var maxY = Math.max(y1, y2) + lineWidth / 2;
+        var bounds = { minX: minX, minY: minY, maxX: maxX, maxY: maxY };
         _super.call(this, bounds);
         this.x1 = x1;
         this.y1 = y1;

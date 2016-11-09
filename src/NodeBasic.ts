@@ -1,6 +1,8 @@
 import Node, {Bounds, Point} from './Node';
+import NodeIndexable from './NodeIndexable';
+import Transformer from './Transformer';
 
-abstract class NodeBasic implements Node {
+abstract class NodeBasic implements NodeIndexable {
     _hitEnabled: boolean = true;
 
     abstract getBounds(): Bounds;
@@ -10,15 +12,15 @@ abstract class NodeBasic implements Node {
     abstract intersection(point: Point): Node;
 
     toImage(): HTMLCanvasElement {
-        const {x, y, width, height} = this.getBounds();
+        const {minX, minY, maxX, maxY} = this.getBounds();
         const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
+        canvas.width = maxX - minX;
+        canvas.height = maxY - minY;
         this.draw(canvas.getContext('2d'));
         return canvas;
     }
 
-    abstract index(action: (node: Node, origin: Point, zIndex: number, bounds: Bounds) => void, origin: Point, zIndex: number): void;
+    abstract index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number): void;
 
     isHitEnabled(): boolean {
         return this._hitEnabled;

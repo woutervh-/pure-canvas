@@ -2,7 +2,7 @@ import Layer from './Layer';
 import Node, {Bounds, Point} from './Node';
 import Transformer from './Transformer';
 
-export default class Translate extends Layer implements Transformer {
+export default class Scale extends Layer implements Transformer {
     private _x: number;
 
     private _y: number;
@@ -14,32 +14,32 @@ export default class Translate extends Layer implements Transformer {
     }
 
     draw(context: CanvasRenderingContext2D): void {
-        context.translate(this._x, this._y);
+        context.scale(this._x, this._y);
         super.draw(context);
-        context.translate(-this._x, -this._y);
+        context.scale(1 / this._x, 1 / this._y);
     }
 
     getBounds(): Bounds {
         const {minX, minY, maxX, maxY} = super.getBounds();
         return {
-            minX: minX + this._x,
-            minY: minY + this._y,
-            maxX: maxX + this._x,
-            maxY: maxY + this._y
+            minX: minX * this._x,
+            minY: minY * this._y,
+            maxX: maxX * this._x,
+            maxY: maxY * this._y
         };
     }
 
     intersection(point: Point): Node {
-        const translatedPoint = {x: point.x - this._x, y: point.y - this._y};
-        return super.intersection(translatedPoint);
+        const scaledPoint = {x: point.x / this._x, y: point.y / this._y};
+        return super.intersection(scaledPoint);
     }
 
     transform(point: Point): Point {
-        return {x: point.x + this._x, y: point.y + this._y};
+        return {x: point.x * this._x, y: point.y * this._y};
     }
 
     untransform(point: Point): Point {
-        return {x: point.x - this._x, y: point.y - this._y};
+        return {x: point.x / this._x, y: point.y / this._y};
     }
 
     index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number): void {

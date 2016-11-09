@@ -9,7 +9,7 @@ var Image = (function (_super) {
     __extends(Image, _super);
     function Image(_a) {
         var width = _a.width, height = _a.height, image = _a.image;
-        _super.call(this, { x: 0, y: 0, width: width, height: height });
+        _super.call(this, { minX: 0, minY: 0, maxX: width, maxY: height });
         this.width = width;
         this.height = height;
         this.image = image;
@@ -25,7 +25,9 @@ var Image = (function (_super) {
     Image.prototype.intersection = function (_a) {
         var x = _a.x, y = _a.y;
         var _b = this, width = _b.width, height = _b.height, image = _b.image;
-        if (0 <= x && x <= width && 0 <= y && y <= height) {
+        var rx = Math.round(x);
+        var ry = Math.round(y);
+        if (0 <= rx && rx <= width && 0 <= ry && ry <= height) {
             if (!this.pixelArray) {
                 var hitCanvas = document.createElement('canvas');
                 hitCanvas.width = width;
@@ -34,7 +36,7 @@ var Image = (function (_super) {
                 hitContext.drawImage(image, 0, 0, width, height);
                 this.pixelArray = hitContext.getImageData(0, 0, width, height).data;
             }
-            if (this.pixelArray[(x + y * width) * 4 + 3] >= 1) {
+            if (this.pixelArray[(rx + ry * width) * 4 + 3] >= 1) {
                 return this;
             }
         }

@@ -9,11 +9,11 @@ var Circle = (function (_super) {
     __extends(Circle, _super);
     function Circle(_a) {
         var radius = _a.radius, _b = _a.lineWidth, lineWidth = _b === void 0 ? 1 : _b, _c = _a.strokeStyle, strokeStyle = _c === void 0 ? 'rgba(0, 0, 0, 1)' : _c, _d = _a.fillStyle, fillStyle = _d === void 0 ? 'rgba(255, 255, 255, 1)' : _d;
-        var minX = Math.floor(-radius - lineWidth);
-        var maxX = Math.ceil(radius + lineWidth);
-        var minY = Math.floor(-radius - lineWidth);
-        var maxY = Math.ceil(radius + lineWidth);
-        var bounds = { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
+        var minX = -radius - lineWidth / 2;
+        var maxX = radius + lineWidth / 2;
+        var minY = -radius - lineWidth / 2;
+        var maxY = radius + lineWidth / 2;
+        var bounds = { minX: minX, minY: minY, maxX: maxX, maxY: maxY };
         _super.call(this, bounds);
         this.radius = radius;
         this.lineWidth = lineWidth;
@@ -42,7 +42,7 @@ var Circle = (function (_super) {
     Circle.prototype.intersection = function (_a) {
         var x = _a.x, y = _a.y;
         var _b = this, radius = _b.radius, lineWidth = _b.lineWidth;
-        if (Math.pow(x, 2) + Math.pow(y, 2) <= Math.pow((radius + lineWidth), 2)) {
+        if (Math.pow(x, 2) + Math.pow(y, 2) <= Math.pow((radius + lineWidth / 2), 2)) {
             return this;
         }
     };

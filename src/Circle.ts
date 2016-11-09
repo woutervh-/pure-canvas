@@ -15,11 +15,11 @@ class Circle extends NodeFixedBounds {
     private fillStyle: string;
 
     constructor({radius, lineWidth = 1, strokeStyle = 'rgba(0, 0, 0, 1)', fillStyle = 'rgba(255, 255, 255, 1)'}: CircleParameters) {
-        const minX = Math.floor(-radius - lineWidth);
-        const maxX = Math.ceil(radius + lineWidth);
-        const minY = Math.floor(-radius - lineWidth);
-        const maxY = Math.ceil(radius + lineWidth);
-        const bounds: Bounds = {x: minX, y: minY, width: maxX - minX, height: maxY - minY};
+        const minX = -radius - lineWidth / 2;
+        const maxX = radius + lineWidth / 2;
+        const minY = -radius - lineWidth / 2;
+        const maxY = radius + lineWidth / 2;
+        const bounds: Bounds = {minX, minY, maxX, maxY};
 
         super(bounds);
         this.radius = radius;
@@ -50,7 +50,7 @@ class Circle extends NodeFixedBounds {
 
     intersection({x, y}: Point): Node {
         const {radius, lineWidth} = this;
-        if (x ** 2 + y ** 2 <= (radius + lineWidth) ** 2) {
+        if (x ** 2 + y ** 2 <= (radius + lineWidth / 2) ** 2) {
             return this;
         }
     }

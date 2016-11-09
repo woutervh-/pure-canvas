@@ -1,9 +1,11 @@
 import Node, {Point, Bounds} from './Node';
+import NodeIndexable from './NodeIndexable';
 import NodeCollection from './NodeCollection';
 import NodeBasic from './NodeBasic';
+import Transformer from './Transformer';
 
 class Layer extends NodeBasic implements NodeCollection {
-    private children: Array<Node> = [];
+    private children: Array<NodeIndexable> = [];
 
     draw(context: CanvasRenderingContext2D): void {
         for (const child of this.children) {
@@ -18,22 +20,22 @@ class Layer extends NodeBasic implements NodeCollection {
         let maxY = Number.NEGATIVE_INFINITY;
 
         for (const child of this.children) {
-            const {x, y, width, height} = child.getBounds();
-            minX = Math.min(minX, x);
-            maxX = Math.max(maxX, x + width);
-            minY = Math.min(minY, y);
-            maxY = Math.max(maxY, y + height);
+            const {minX: childMinX, minY: childMinY, maxX: childMaxX, maxY: childMaxY} = child.getBounds();
+            minX = Math.min(minX, childMinX);
+            minY = Math.min(minY, childMinY);
+            maxX = Math.max(maxX, childMaxX);
+            maxY = Math.max(maxY, childMaxY);
         }
 
-        return {x: minX, y: minY, width: maxX - minX, height: maxY - minY};
+        return {minX, minY, maxX, maxY};
     }
 
-    add(node: Node): number {
+    add(node: NodeIndexable): number {
         this.children.push(node);
         return this.children.length - 1;
     }
 
-    remove(a: number | Node): void {
+    remove(a: number | NodeIndexable): void {
         if (typeof a === 'number') {
             this.children.splice(a, 1);
         } else {
@@ -61,10 +63,10 @@ class Layer extends NodeBasic implements NodeCollection {
         }
     }
 
-    index(action: (node: Node, origin: Point, zIndex: number, bounds: Bounds) => void, origin: Point, zIndex: number): void {
+    index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number): void {
         for (const child of this.children) {
             if (child.isHitEnabled()) {
-                child.index(action, origin, zIndex++);
+                child.index(action, zIndex++);
             }
         }
     }

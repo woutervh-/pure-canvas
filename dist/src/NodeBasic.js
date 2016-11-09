@@ -4,10 +4,10 @@ var NodeBasic = (function () {
         this._hitEnabled = true;
     }
     NodeBasic.prototype.toImage = function () {
-        var _a = this.getBounds(), x = _a.x, y = _a.y, width = _a.width, height = _a.height;
+        var _a = this.getBounds(), minX = _a.minX, minY = _a.minY, maxX = _a.maxX, maxY = _a.maxY;
         var canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
+        canvas.width = maxX - minX;
+        canvas.height = maxY - minY;
         this.draw(canvas.getContext('2d'));
         return canvas;
     };

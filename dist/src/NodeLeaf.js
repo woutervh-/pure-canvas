@@ -5,13 +5,14 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var NodeBasic_1 = require('./NodeBasic');
+var emptyTransformers = [];
 var NodeLeaf = (function (_super) {
     __extends(NodeLeaf, _super);
     function NodeLeaf() {
         _super.apply(this, arguments);
     }
-    NodeLeaf.prototype.index = function (action, origin, zIndex) {
-        action(this, origin, zIndex, this.getBounds());
+    NodeLeaf.prototype.index = function (action, zIndex) {
+        action(this, zIndex, emptyTransformers);
     };
     return NodeLeaf;
 }(NodeBasic_1.default));

@@ -24,13 +24,13 @@ var Layer = (function (_super) {
         var maxY = Number.NEGATIVE_INFINITY;
         for (var _i = 0, _a = this.children; _i < _a.length; _i++) {
             var child = _a[_i];
-            var _b = child.getBounds(), x = _b.x, y = _b.y, width = _b.width, height = _b.height;
-            minX = Math.min(minX, x);
-            maxX = Math.max(maxX, x + width);
-            minY = Math.min(minY, y);
-            maxY = Math.max(maxY, y + height);
+            var _b = child.getBounds(), childMinX = _b.minX, childMinY = _b.minY, childMaxX = _b.maxX, childMaxY = _b.maxY;
+            minX = Math.min(minX, childMinX);
+            minY = Math.min(minY, childMinY);
+            maxX = Math.max(maxX, childMaxX);
+            maxY = Math.max(maxY, childMaxY);
         }
-        return { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
+        return { minX: minX, minY: minY, maxX: maxX, maxY: maxY };
     };
     Layer.prototype.add = function (node) {
         this.children.push(node);
@@ -62,11 +62,11 @@ var Layer = (function (_super) {
             }
         }
     };
-    Layer.prototype.index = function (action, origin, zIndex) {
+    Layer.prototype.index = function (action, zIndex) {
         for (var _i = 0, _a = this.children; _i < _a.length; _i++) {
             var child = _a[_i];
             if (child.isHitEnabled()) {
-                child.index(action, origin, zIndex++);
+                child.index(action, zIndex++);
             }
         }
     };

@@ -1,9 +1,9 @@
-import Node from './Node';
+import NodeIndexable from './NodeIndexable';
 
 interface NodeCollection {
-    add(node: Node): number;
+    add(node: NodeIndexable): number;
 
-    remove(a: number | Node): void;
+    remove(a: number | NodeIndexable): void;
 
     removeAll(): void;
 

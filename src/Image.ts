@@ -14,7 +14,7 @@ class Image extends NodeFixedBounds {
     private pixelArray: Uint8ClampedArray;
 
     constructor({width, height, image}: ImageParameters) {
-        super({x: 0, y: 0, width, height});
+        super({minX: 0, minY: 0, maxX: width, maxY: height});
         this.width = width;
         this.height = height;
         this.image = image;
@@ -31,8 +31,10 @@ class Image extends NodeFixedBounds {
 
     intersection({x, y}: Point): Node {
         const {width, height, image} = this;
+        const rx = Math.round(x);
+        const ry = Math.round(y);
 
-        if (0 <= x && x <= width && 0 <= y && y <= height) {
+        if (0 <= rx && rx <= width && 0 <= ry && ry <= height) {
             if (!this.pixelArray) {
                 const hitCanvas: HTMLCanvasElement = document.createElement('canvas');
                 hitCanvas.width = width;
@@ -42,7 +44,7 @@ class Image extends NodeFixedBounds {
                 this.pixelArray = hitContext.getImageData(0, 0, width, height).data;
             }
 
-            if (this.pixelArray[(x + y * width) * 4 + 3] >= 1) {
+            if (this.pixelArray[(rx + ry * width) * 4 + 3] >= 1) {
                 return this;
             }
         }

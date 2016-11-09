@@ -1,8 +1,8 @@
 export interface Bounds {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
+    minX: number;
+    minY: number;
+    maxX: number;
+    maxY: number;
 }
 
 export interface Point {
@@ -18,8 +18,6 @@ interface Node {
     intersection(point: Point): Node;
 
     toImage(): HTMLCanvasElement;
-
-    index(action: (node: Node, origin: Point, zIndex: number, bounds: Bounds) => void, origin: Point, zIndex: number): void;
 
     isHitEnabled(): boolean;
 

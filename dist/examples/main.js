@@ -10,7 +10,9 @@ var Stage_1 = require('../src/Stage');
 var Circle_1 = require('../src/Circle');
 var Image_1 = require('../src/Image');
 var Line_1 = require('../src/Line');
+var Rectangle_1 = require('../src/Rectangle');
 var Translate_1 = require('../src/Translate');
+var Scale_1 = require('../src/Scale');
 var colors_1 = require('./colors');
 var triangle = require('./triangle.svg');
 var LayerCached_1 = require('../src/LayerCached');
@@ -41,6 +43,14 @@ var IdentifiedLine = (function (_super) {
     }
     return IdentifiedLine;
 }(Line_1.default));
+var IdentifiedRectangle = (function (_super) {
+    __extends(IdentifiedRectangle, _super);
+    function IdentifiedRectangle() {
+        _super.apply(this, arguments);
+        this.type = 'rectangle';
+    }
+    return IdentifiedRectangle;
+}(Rectangle_1.default));
 var App = (function (_super) {
     __extends(App, _super);
     function App() {
@@ -51,28 +61,37 @@ var App = (function (_super) {
         function onImageLoaded() {
             var stage = new Stage_1.default(canvas);
             var hoverLayer = new Translate_1.default();
+            var scaledHoverLayer = new Scale_1.default({ x: 2, y: 2 });
+            var scaledLayer = new Scale_1.default({ x: 2, y: 2 });
             var cachedLayer = new LayerCached_1.default();
             var hoverImage = new Image_1.default({ width: 24, height: 24, image: triangleImage });
             var hoverCircle = new Circle_1.default({ radius: 10, fillStyle: 'white' });
-            var hoverLine = new Line_1.default({ x1: 0, y1: 0, x2: 10, y2: 10, lineWidth: 5 });
+            var hoverLine = new Line_1.default({ x1: 0, y1: 0, x2: 15, y2: 15, lineWidth: 5 });
+            var hoverRectangle = new IdentifiedRectangle({ x1: 0, y1: 0, x2: 8, y2: 8, strokeStyle: 'red' });
             hoverImage.setHitEnabled(false);
             hoverCircle.setHitEnabled(false);
             hoverLine.setHitEnabled(false);
+            hoverRectangle.setHitEnabled(false);
             for (var i = 0; i < 400; i++) {
                 var image = new IdentifiedImage({ width: 20, height: 20, image: triangleImage });
                 var circle = new IdentifiedCircle({ radius: 8, fillStyle: getRandomColor() });
                 var line = new IdentifiedLine({ x1: 0, y1: 0, x2: 15, y2: 15, lineWidth: 3 });
+                var rectangle = new IdentifiedRectangle({ x1: 0, y1: 0, x2: 8, y2: 8 });
                 image.id = i;
                 circle.id = i;
                 line.id = i;
+                rectangle.id = i;
                 var layer = new Translate_1.default({ x: (i % 20) * 20, y: Math.floor(i / 20) * 20 });
                 layer.add(image);
                 layer.add(circle);
                 layer.add(line);
-                cachedLayer.add(layer);
+                layer.add(rectangle);
+                scaledLayer.add(layer);
             }
+            scaledHoverLayer.add(hoverLayer);
+            cachedLayer.add(scaledLayer);
             stage.add(cachedLayer);
-            stage.add(hoverLayer);
+            stage.add(scaledHoverLayer);
             stage.render();
             stage.on('mousemove', function (node) {
                 hoverLayer.removeAll();
@@ -92,6 +111,11 @@ var App = (function (_super) {
                             hoverLayer.x = (node.id % 20) * 20;
                             hoverLayer.y = Math.floor(node.id / 20) * 20;
                             hoverLayer.add(hoverLine);
+                            break;
+                        case 'rectangle':
+                            hoverLayer.x = (node.id % 20) * 20;
+                            hoverLayer.y = Math.floor(node.id / 20) * 20;
+                            hoverLayer.add(hoverRectangle);
                             break;
                         default:
                             break;

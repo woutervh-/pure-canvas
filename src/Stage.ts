@@ -1,11 +1,13 @@
 import Node, {Bounds, Point} from './Node';
+import NodeIndexable from './NodeIndexable';
 import NodeCollection from './NodeCollection';
+import Transformer from './Transformer';
 import {EventEmitter} from 'eventemitter3';
 import Layer from './Layer';
 import * as rbush from 'rbush';
 
 interface IndexedNode extends rbush.BBox {
-    origin: Point;
+    transformers: Array<Transformer>;
     node: Node;
     zIndex: number;
 }
@@ -52,9 +54,8 @@ export default class Stage extends EventEmitter implements NodeCollection {
             .search({minX: point.x, minY: point.y, maxX: point.x, maxY: point.y})
             .sort((a: IndexedNode, b: IndexedNode) => b.zIndex - a.zIndex)
             .map((indexedNode: IndexedNode) => {
-                const {x, y} = indexedNode.origin;
-                const transformedPoint = {x: point.x - x, y: point.y - y};
-                return indexedNode.node.intersection(transformedPoint);
+                const untransformedPoint = indexedNode.transformers.reduceRight((point: Point, transformer: Transformer) => transformer.untransform(point), point);
+                return indexedNode.node.intersection(untransformedPoint);
             })
             .filter(Boolean);
 
@@ -82,16 +83,19 @@ export default class Stage extends EventEmitter implements NodeCollection {
         this.internalLayer.draw(this.context);
 
         this.tree.clear();
-        this.internalLayer.index((node: Node, origin: Point, zIndex: number, {x, y, width, height}: Bounds) => {
-            this.tree.insert({minX: x, minY: y, maxX: x + width, maxY: y + height, origin, node, zIndex});
-        }, {x: 0, y: 0}, 0);
+        this.internalLayer.index((node: Node, zIndex: number, transformers: Array<Transformer>) => {
+            const bounds = node.getBounds();
+            const {x: minX, y: minY} = transformers.reduce((point: Point, transformer: Transformer) => transformer.transform(point), {x: bounds.minX, y: bounds.minY})
+            const {x: maxX, y: maxY} = transformers.reduce((point: Point, transformer: Transformer) => transformer.transform(point), {x: bounds.maxX, y: bounds.maxY})
+            this.tree.insert({minX, minY, maxX, maxY, transformers, node, zIndex});
+        }, 0);
     }
 
-    add(node: Node): number {
+    add(node: NodeIndexable): number {
         return this.internalLayer.add(node);
     }
 
-    remove(a: number|Node): void {
+    remove(a: number|NodeIndexable): void {
         this.internalLayer.remove(a);
     }
 

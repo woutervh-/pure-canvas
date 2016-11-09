@@ -54,9 +54,8 @@ var Stage = (function (_super) {
             .search({ minX: point.x, minY: point.y, maxX: point.x, maxY: point.y })
             .sort(function (a, b) { return b.zIndex - a.zIndex; })
             .map(function (indexedNode) {
-            var _a = indexedNode.origin, x = _a.x, y = _a.y;
-            var transformedPoint = { x: point.x - x, y: point.y - y };
-            return indexedNode.node.intersection(transformedPoint);
+            var untransformedPoint = indexedNode.transformers.reduceRight(function (point, transformer) { return transformer.untransform(point); }, point);
+            return indexedNode.node.intersection(untransformedPoint);
         })
             .filter(Boolean);
         this.emit(name, results[0], event);
@@ -66,10 +65,12 @@ var Stage = (function (_super) {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.internalLayer.draw(this.context);
         this.tree.clear();
-        this.internalLayer.index(function (node, origin, zIndex, _a) {
-            var x = _a.x, y = _a.y, width = _a.width, height = _a.height;
-            _this.tree.insert({ minX: x, minY: y, maxX: x + width, maxY: y + height, origin: origin, node: node, zIndex: zIndex });
-        }, { x: 0, y: 0 }, 0);
+        this.internalLayer.index(function (node, zIndex, transformers) {
+            var bounds = node.getBounds();
+            var _a = transformers.reduce(function (point, transformer) { return transformer.transform(point); }, { x: bounds.minX, y: bounds.minY }), minX = _a.x, minY = _a.y;
+            var _b = transformers.reduce(function (point, transformer) { return transformer.transform(point); }, { x: bounds.maxX, y: bounds.maxY }), maxX = _b.x, maxY = _b.y;
+            _this.tree.insert({ minX: minX, minY: minY, maxX: maxX, maxY: maxY, transformers: transformers, node: node, zIndex: zIndex });
+        }, 0);
     };
     Stage.prototype.add = function (node) {
         return this.internalLayer.add(node);
