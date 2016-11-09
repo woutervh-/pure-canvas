@@ -3,8 +3,6 @@ import NodeIndexable from './NodeIndexable';
 import Transformer from './Transformer';
 
 abstract class NodeBasic implements NodeIndexable {
-    _hitEnabled: boolean = true;
-
     abstract getBounds(): Bounds;
 
     abstract draw(context: CanvasRenderingContext2D): void;
@@ -22,13 +20,9 @@ abstract class NodeBasic implements NodeIndexable {
 
     abstract index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number): void;
 
-    isHitEnabled(): boolean {
-        return this._hitEnabled;
-    }
+    abstract isHitEnabled(): boolean;
 
-    setHitEnabled(value: boolean): void {
-        this._hitEnabled = value;
-    }
+    abstract setHitEnabled(value: boolean): void;
 }
 
 export default NodeBasic;

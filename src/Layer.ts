@@ -5,6 +5,8 @@ import NodeBasic from './NodeBasic';
 import Transformer from './Transformer';
 
 class Layer extends NodeBasic implements NodeCollection {
+    private hitEnabled: boolean = true;
+
     private children: Array<NodeIndexable> = [];
 
     draw(context: CanvasRenderingContext2D): void {
@@ -69,6 +71,14 @@ class Layer extends NodeBasic implements NodeCollection {
                 child.index(action, zIndex++);
             }
         }
+    }
+
+    isHitEnabled(): boolean {
+        return this.hitEnabled;
+    }
+
+    setHitEnabled(value: boolean): void {
+        this.hitEnabled = value;
     }
 }
 

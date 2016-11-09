@@ -49,17 +49,17 @@ class App extends React.Component<{}, {}> {
             const hoverImage = new CanvasImage({width: 24, height: 24, image: triangleImage});
             const hoverCircle = new Circle({radius: 10, fillStyle: 'white'});
             const hoverLine = new Line({x1: 0, y1: 0, x2: 15, y2: 15, lineWidth: 5});
-            const hoverRectangle = new IdentifiedRectangle({x1: 0, y1: 0, x2: 8, y2: 8, strokeStyle: 'red'});
-            hoverImage.setHitEnabled(false);
-            hoverCircle.setHitEnabled(false);
-            hoverLine.setHitEnabled(false);
-            hoverRectangle.setHitEnabled(false);
+            const hoverRectangle = new Rectangle({x1: 0, y1: 0, x2: 8, y2: 8, strokeStyle: 'red'});
 
             for (let i = 0; i < 400; i++) {
                 const image = new IdentifiedImage({width: 20, height: 20, image: triangleImage});
                 const circle = new IdentifiedCircle({radius: 8, fillStyle: getRandomColor()});
                 const line = new IdentifiedLine({x1: 0, y1: 0, x2: 15, y2: 15, lineWidth: 3});
                 const rectangle = new IdentifiedRectangle({x1: 0, y1: 0, x2: 8, y2: 8});
+                image.setHitEnabled(true);
+                circle.setHitEnabled(true);
+                line.setHitEnabled(true);
+                rectangle.setHitEnabled(true);
                 image.id = i;
                 circle.id = i;
                 line.id = i;
