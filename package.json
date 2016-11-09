@@ -8,8 +8,20 @@
     "test": "tsc test/index.ts",
     "examples": "webpack-dev-server --config webpack.config.js --content-base dist/ --hot --inline --host 0.0.0.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/woutervh-/pure-canvas.git"
+  },
+  "keywords": [
+    "canvas",
+    "typescript"
+  ],
   "author": "Wouter van Heeswijk",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/woutervh-/pure-canvas/issues"
+  },
+  "homepage": "https://github.com/woutervh-/pure-canvas#readme",
   "devDependencies": {
     "@types/eventemitter3": "^1.1.29",
     "@types/rbush": "^2.0.2",
