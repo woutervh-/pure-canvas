@@ -1,2 +1,5 @@
 # Depdencies
 node_modules/
+
+# Examples dist/ folder
+dist/
