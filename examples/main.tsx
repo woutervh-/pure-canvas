@@ -78,8 +78,9 @@ class App extends React.Component<{}, {}> {
             stage.add(scaledHoverLayer);
             stage.render();
 
-            stage.on('mousemove', node => {
+            stage.on('mousemove', getNode => {
                 hoverLayer.removeAll();
+                const node = getNode();
                 if (node) {
                     switch (node.type) {
                         case 'image':

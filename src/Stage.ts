@@ -48,18 +48,24 @@ export default class Stage extends EventEmitter implements NodeCollection {
     }
 
     private emitHitEvent(name: string, event: MouseEvent): void {
-        const point = this.eventToElementCoordinate(event);
-
-        const results = this.tree
-            .search({minX: point.x, minY: point.y, maxX: point.x, maxY: point.y})
-            .sort((a: IndexedNode, b: IndexedNode) => b.zIndex - a.zIndex)
-            .map((indexedNode: IndexedNode) => {
-                const untransformedPoint = indexedNode.transformers.reduceRight((point: Point, transformer: Transformer) => transformer.untransform(point), point);
-                return indexedNode.node.intersection(untransformedPoint);
-            })
-            .filter(Boolean);
-
-        this.emit(name, results[0], event);
+        let didSearch: boolean = false;
+        let result: Node = undefined;
+        this.emit(name, () => {
+            if (!didSearch) {
+                const point = this.eventToElementCoordinate(event);
+                const results = this.tree
+                    .search({minX: point.x, minY: point.y, maxX: point.x, maxY: point.y})
+                    .sort((a: IndexedNode, b: IndexedNode) => b.zIndex - a.zIndex)
+                    .map((indexedNode: IndexedNode) => {
+                        const untransformedPoint = indexedNode.transformers.reduceRight((point: Point, transformer: Transformer) => transformer.untransform(point), point);
+                        return indexedNode.node.intersection(untransformedPoint);
+                    })
+                    .filter(Boolean);
+                result = results[0];
+                didSearch = true;
+            }
+            return result;
+        }, event);
     }
 
     private handleMouseDown = (event: MouseEvent) => {
