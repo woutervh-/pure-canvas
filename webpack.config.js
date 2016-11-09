@@ -22,10 +22,9 @@ module.exports = {
         ]
     },
 
-    // externals: {
-    //     'react': 'React',
-    //     'react-dom': 'ReactDOM'
-    // },
+    ts: {
+        configFileName: 'tsconfig.examples.json'
+    },
 
     plugins: [
         new HtmlWebpackPlugin({
