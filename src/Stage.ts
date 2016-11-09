@@ -87,7 +87,10 @@ export default class Stage extends EventEmitter implements NodeCollection {
     render(): void {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.internalLayer.draw(this.context);
+        this.index();
+    }
 
+    index(): void {
         this.tree.clear();
         this.internalLayer.index((node: Node, zIndex: number, transformers: Array<Transformer>) => {
             const bounds = node.getBounds();
