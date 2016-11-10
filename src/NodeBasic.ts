@@ -14,7 +14,10 @@ abstract class NodeBasic implements NodeIndexable {
         const canvas = document.createElement('canvas');
         canvas.width = maxX - minX;
         canvas.height = maxY - minY;
-        this.draw(canvas.getContext('2d'));
+        const context = canvas.getContext('2d');
+        context.translate(-minX, -minY);
+        this.draw(context);
+        context.translate(minX, minY);
         return canvas;
     }
 

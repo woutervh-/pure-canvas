@@ -14,7 +14,8 @@ export default class LayerCached extends Layer {
                 this.cache = this.toImage();
                 this.caching = false;
             }
-            context.drawImage(this.cache, 0, 0, this.cache.width, this.cache.height);
+            const {minX, minY, maxX, maxY} = this.getBounds();
+            context.drawImage(this.cache, minX, minY, maxX - minX, maxY - minY);
         }
     }
 };
