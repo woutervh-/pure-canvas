@@ -1,4 +1,4 @@
-import Node, {Bounds, Point} from './Node';
+import Node, {Point} from './Node';
 import NodeIndexable from './NodeIndexable';
 import NodeCollection from './NodeCollection';
 import Transformer from './Transformer';

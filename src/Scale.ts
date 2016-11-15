@@ -1,8 +1,7 @@
-import Layer from './Layer';
 import Node, {Bounds, Point} from './Node';
 import Transformer from './Transformer';
 
-export default class Scale extends Layer implements Transformer {
+export default class Scale extends Transformer {
     private _x: number;
 
     private _y: number;
@@ -40,12 +39,6 @@ export default class Scale extends Layer implements Transformer {
 
     untransform(point: Point): Point {
         return {x: point.x / this._x, y: point.y / this._y};
-    }
-
-    index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number): void {
-        super.index((node: Node, zIndex: number, transformers: Array<Transformer>) => {
-            action(node, zIndex, [...transformers, this]);
-        }, zIndex);
     }
 
     get x(): number {
