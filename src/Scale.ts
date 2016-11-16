@@ -12,9 +12,11 @@ export default class Scale extends Transformer {
         this._y = y;
     }
 
-    draw(context: CanvasRenderingContext2D): void {
+    preDraw(context: CanvasRenderingContext2D): void {
         context.scale(this._x, this._y);
-        super.draw(context);
+    }
+
+    postDraw(context: CanvasRenderingContext2D): void {
         context.scale(1 / this._x, 1 / this._y);
     }
 

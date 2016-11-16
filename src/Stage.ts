@@ -39,7 +39,7 @@ export default class Stage extends EventEmitter implements NodeCollection {
         this.canvas.removeEventListener('click', this.handleClick);
     }
 
-    private eventToElementCoordinate({clientX, clientY}: MouseEvent, element: HTMLCanvasElement = this.canvas): {x: number, y: number} {
+    eventToElementCoordinate({clientX, clientY}: MouseEvent, element: HTMLCanvasElement = this.canvas): {x: number, y: number} {
         const {left, top} = element.getBoundingClientRect();
         return {
             x: Math.round(clientX - left),
@@ -47,15 +47,12 @@ export default class Stage extends EventEmitter implements NodeCollection {
         };
     }
 
-    private emitHitEvent(name: string, event: MouseEvent): void {
+    emitHitEvent(name: string, event: MouseEvent): void {
         let didSearch: boolean = false;
         let result: Node = undefined;
         this.emit(name, () => {
             if (!didSearch) {
                 const point = this.eventToElementCoordinate(event);
-
-                // console.log(this.tree.search({minX: point.x, minY: point.y, maxX: point.x, maxY: point.y}));
-
                 const results = this.tree
                     .search({minX: point.x, minY: point.y, maxX: point.x, maxY: point.y})
                     .sort((a: IndexedNode, b: IndexedNode) => b.zIndex - a.zIndex)
