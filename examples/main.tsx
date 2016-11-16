@@ -6,6 +6,7 @@ import CanvasImage from '../src/Image';
 import Line from '../src/Line';
 import Rectangle from '../src/Rectangle';
 import Translate from '../src/Translate';
+import Transform from '../src/Transform';
 import Scale from '../src/Scale';
 import colors from './colors';
 import * as triangle from './triangle.svg';
@@ -43,7 +44,6 @@ class App extends React.Component<{}, {}> {
             const stage = new Stage(canvas);
             const hoverLayer = new Translate();
             const scaledHoverLayer = new Scale({x: 2, y: 2});
-            const scaledLayer = new Scale({x: 2, y: 2});
             const cachedLayer = new LayerCached();
 
             const hoverImage = new CanvasImage({width: 24, height: 24, image: triangleImage});
@@ -64,16 +64,19 @@ class App extends React.Component<{}, {}> {
                 circle.id = i;
                 line.id = i;
                 rectangle.id = i;
-                const layer = new Translate({x: (i % 20) * 20, y: Math.floor(i / 20) * 20});
+                // const layer = new Translate({x: (i % 20) * 20, y: Math.floor(i / 20) * 20});
+                const layer = new Transform();
+                layer.rotate(Math.PI / 8);
+                layer.translate((i % 20) * 20, Math.floor(i / 20) * 20);
+                layer.scale(2, 1);
                 layer.add(image);
                 layer.add(circle);
                 layer.add(line);
                 layer.add(rectangle);
-                scaledLayer.add(layer);
+                cachedLayer.add(layer);
             }
 
             scaledHoverLayer.add(hoverLayer);
-            cachedLayer.add(scaledLayer);
             stage.add(cachedLayer);
             stage.add(scaledHoverLayer);
             stage.render();

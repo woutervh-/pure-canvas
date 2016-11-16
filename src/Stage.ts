@@ -53,6 +53,9 @@ export default class Stage extends EventEmitter implements NodeCollection {
         this.emit(name, () => {
             if (!didSearch) {
                 const point = this.eventToElementCoordinate(event);
+
+                // console.log(this.tree.search({minX: point.x, minY: point.y, maxX: point.x, maxY: point.y}));
+
                 const results = this.tree
                     .search({minX: point.x, minY: point.y, maxX: point.x, maxY: point.y})
                     .sort((a: IndexedNode, b: IndexedNode) => b.zIndex - a.zIndex)
@@ -94,9 +97,18 @@ export default class Stage extends EventEmitter implements NodeCollection {
         this.tree.clear();
         this.internalLayer.index((node: Node, zIndex: number, transformers: Array<Transformer>) => {
             const bounds = node.getBounds();
-            const {x: minX, y: minY} = transformers.reduce((point: Point, transformer: Transformer) => transformer.transform(point), {x: bounds.minX, y: bounds.minY})
-            const {x: maxX, y: maxY} = transformers.reduce((point: Point, transformer: Transformer) => transformer.transform(point), {x: bounds.maxX, y: bounds.maxY})
-            this.tree.insert({minX, minY, maxX, maxY, transformers, node, zIndex});
+            const {x: x1, y: y1} = transformers.reduce((point: Point, transformer: Transformer) => transformer.transform(point), {x: bounds.minX, y: bounds.minY});
+            const {x: x2, y: y2} = transformers.reduce((point: Point, transformer: Transformer) => transformer.transform(point), {x: bounds.maxX, y: bounds.maxY});
+            const {x: x3, y: y3} = transformers.reduce((point: Point, transformer: Transformer) => transformer.transform(point), {x: bounds.minX, y: bounds.maxY});
+            const {x: x4, y: y4} = transformers.reduce((point: Point, transformer: Transformer) => transformer.transform(point), {x: bounds.maxX, y: bounds.minY});
+            const minX = Math.min(x1, x2, x3, x4);
+            const minY = Math.min(y1, y2, y3, y4);
+            const maxX = Math.max(x1, x2, x3, x4);
+            const maxY = Math.max(y1, y2, y3, y4);
+            this.tree.insert({
+                minX, minY, maxX, maxY,
+                transformers, node, zIndex
+            });
         }, 0);
     }
 

@@ -32,18 +32,15 @@ export default class Transform extends Transformer {
     }
 
     getBounds(): Bounds {
-        const {minX, minY, maxX, maxY} = super.getBounds();
-        return {
-            minX: minX * this._x,
-            minY: minY * this._y,
-            maxX: maxX * this._x,
-            maxY: maxY * this._y
-        };
+        const bounds = super.getBounds();
+        const {x: minX, y: minY} = this.transform({x: bounds.minX, y: bounds.minY});
+        const {x: maxX, y: maxY} = this.transform({x: bounds.maxX, y: bounds.maxY});
+        return {minX, minY, maxX, maxY};
     }
 
     intersection(point: Point): Node {
-        const scaledPoint = {x: point.x / this._x, y: point.y / this._y};
-        return super.intersection(scaledPoint);
+        const untransformedPoint = this.untransform(point);
+        return super.intersection(untransformedPoint);
     }
 
     transform(point: Point): Point {
@@ -70,19 +67,31 @@ export default class Transform extends Transformer {
         this._f = 0;
     }
 
-    rotate(angle): void {
+    rotate(angle: number): void {
         // Assume angle is in radians
         const sin = Math.sin(angle);
         const cos = Math.cos(angle);
-        // TODO
+        const {_a: a, _b: b, _c: c, _d: d, _e: e, _f: f} = this;
+        this._a = a * cos - b * sin;
+        this._b = a * sin + b * cos;
+        this._c = c * cos - d * sin;
+        this._d = c * sin + d * cos;
+        this._e = e * cos - f * sin;
+        this._f = e * sin + f * cos;
     }
 
-    translate(x, y): void {
-        // TODO
+    translate(x: number, y: number): void {
+        this._e += x;
+        this._f += y;
     }
 
-    scale(x, y): void {
-        // TODO
+    scale(x: number, y: number): void {
+        this._a *= x;
+        this._b *= y;
+        this._c *= x;
+        this._d *= y;
+        this._e *= x;
+        this._f *= y;
     }
 
     get a(): number {

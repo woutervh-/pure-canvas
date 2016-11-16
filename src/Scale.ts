@@ -21,10 +21,10 @@ export default class Scale extends Transformer {
     getBounds(): Bounds {
         const {minX, minY, maxX, maxY} = super.getBounds();
         return {
-            minX: minX * this._x,
-            minY: minY * this._y,
-            maxX: maxX * this._x,
-            maxY: maxY * this._y
+            minX: this._x >= 0 ? minX * this._x : maxX * this._x,
+            minY: this._y >= 0 ? minY * this._y : maxY * this._y,
+            maxX: this._x >= 0 ? maxX * this._x : minX * this._x,
+            maxY: this._y >= 0 ? maxY * this._y : minY * this._y
         };
     }
 
