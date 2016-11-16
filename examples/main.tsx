@@ -64,7 +64,6 @@ class App extends React.Component<{}, {}> {
                 circle.id = i;
                 line.id = i;
                 rectangle.id = i;
-                // const layer = new Translate({x: (i % 20) * 20, y: Math.floor(i / 20) * 20});
                 const layer = new Transform();
                 layer.rotate(Math.PI / 8);
                 layer.translate((i % 20) * 20, Math.floor(i / 20) * 20);
