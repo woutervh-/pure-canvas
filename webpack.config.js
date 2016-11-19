@@ -15,6 +15,7 @@ module.exports = {
     module: {
         loaders: [
             {test: /\.svg$/, loader: 'url'},
+            {test: /\.png$/, loader: 'url'},
             {test: /\.tsx?$/, loader: 'ts-loader'}
         ],
         preLoaders: [

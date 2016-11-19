@@ -7,9 +7,11 @@ import Line from '../src/Line';
 import Rectangle from '../src/Rectangle';
 import Translate from '../src/Translate';
 import Transform from '../src/Transform';
+import Layer from '../src/Layer';
 import Scale from '../src/Scale';
 import colors from './colors';
 import * as triangle from './triangle.svg';
+import * as lion from './lion.png';
 import LayerCached from '../src/LayerCached';
 
 function getRandomColor() {
@@ -37,6 +39,57 @@ class IdentifiedRectangle extends Rectangle {
 }
 
 class App extends React.Component<{}, {}> {
+    state = {
+        direction: 1
+    };
+
+    smallerExample(canvas: HTMLCanvasElement) {
+        const lionImage = new Image();
+
+        const onImageLoaded = () => {
+            const stage = new Stage(canvas);
+            const container = new Layer();
+
+            const lionLayer = new Transform();
+            const leImage = new IdentifiedImage({width: 100, height: 100, image: lionImage});
+            leImage.setHitEnabled(true);
+            lionLayer.translate(-50, -50);
+            lionLayer.add(leImage);
+
+            for (let i = 0; i < 17 * 9; i++) {
+                const subLayer = new Translate({x: (i % 17) * 100, y: Math.floor(i / 17) * 100});
+                subLayer.add(lionLayer);
+                container.add(subLayer);
+            }
+
+            stage.add(container);
+            stage.render();
+
+            const callback = () => {
+                lionLayer.rotate(this.state.direction * Math.PI / 40);
+                stage.render();
+                window.requestAnimationFrame(callback);
+            };
+            callback();
+
+            stage.on('click', (getNode, event) => {
+                const node = getNode();
+                if (node) {
+                    if (1380 <= event.clientX && event.clientX <= 1440 && 530 <= event.clientY && event.clientY <= 620) {
+                        window.alert('Surprise lion!');
+                    }
+                }
+            });
+        };
+
+        lionImage.src = lion;
+        if (lionImage.complete) {
+            onImageLoaded();
+        } else {
+            lionImage.onload = onImageLoaded;
+        }
+    }
+
     renderToCanvas(canvas: HTMLCanvasElement) {
         const triangleImage = new Image();
 
@@ -65,9 +118,9 @@ class App extends React.Component<{}, {}> {
                 line.id = i;
                 rectangle.id = i;
                 const layer = new Transform();
-                layer.rotate(Math.PI / 8);
                 layer.translate((i % 20) * 20, Math.floor(i / 20) * 20);
-                layer.scale(2, 1);
+                // layer.rotate(Math.PI / 8);
+                layer.scale(1, 1);
                 layer.add(image);
                 layer.add(circle);
                 layer.add(line);
@@ -122,9 +175,12 @@ class App extends React.Component<{}, {}> {
     }
 
     render() {
-        return <canvas width={400} height={400} ref={(r: HTMLCanvasElement) => this.renderToCanvas(r)}>
-            Your browser does not support the HTML5 canvas tag.
-        </canvas>;
+        return <div>
+            <canvas width={1600} height={800} ref={(r: HTMLCanvasElement) => this.smallerExample(r)}>
+                Your browser does not support the HTML5 canvas tag.
+            </canvas>
+            <button onClick={() => this.setState({direction: -this.state.direction})}>Click me!</button>
+        </div>;
     }
 }
 
