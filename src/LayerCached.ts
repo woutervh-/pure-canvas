@@ -29,17 +29,16 @@ export default class LayerCached extends Layer {
             const cacheContext = this.cache.getContext('2d');
             const cacheStepAccumulator: Array<() => void> = [];
             const cacheCommitAccumulator: Array<() => void> = [];
-
-            cacheStepAccumulator.push(() => cacheContext.translate(-minX, -minY));
             super.drawDeferred(cacheContext, cacheStepAccumulator, cacheCommitAccumulator);
-            cacheStepAccumulator.push(() => cacheContext.translate(minX, minY));
 
+            stepAccumulator.push(() => cacheContext.translate(-minX, -minY));
             for (const cacheStep of cacheStepAccumulator) {
                 stepAccumulator.push(cacheStep);
             }
             for (const cacheCommit of cacheCommitAccumulator) {
                 stepAccumulator.push(cacheCommit);
             }
+            stepAccumulator.push(() => cacheContext.translate(minX, minY));
         }
 
         commitAccumulator.push(() => {
