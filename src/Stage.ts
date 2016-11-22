@@ -53,9 +53,6 @@ export default class Stage extends EventEmitter implements NodeCollection {
         this.emit(name, () => {
             if (!didSearch) {
                 const point = this.eventToElementCoordinate(event);
-
-                // console.log(this.tree.search({minX: point.x, minY: point.y, maxX: point.x, maxY: point.y}));
-
                 const results = this.tree
                     .search({minX: point.x, minY: point.y, maxX: point.x, maxY: point.y})
                     .sort((a: IndexedNode, b: IndexedNode) => b.zIndex - a.zIndex)
@@ -88,9 +85,27 @@ export default class Stage extends EventEmitter implements NodeCollection {
     };
 
     render(): void {
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.internalLayer.draw(this.context);
-        this.index();
+        const {steps, commit} = this.renderDeferred();
+        for (const step of steps) {
+            step();
+        }
+        commit();
+    }
+
+    renderDeferred(): {steps: Array<() => void>, commit: () => void} {
+        const stepAccumulator: Array<() => void> = [];
+        const commitAccumulator: Array<() => void> = [];
+        this.internalLayer.drawDeferred(this.context, stepAccumulator, commitAccumulator);
+
+        const commit = () => {
+            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            for (const commit of commitAccumulator) {
+                commit();
+            }
+            this.index();
+        };
+
+        return {steps: stepAccumulator, commit};
     }
 
     index(): void {

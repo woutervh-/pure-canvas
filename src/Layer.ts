@@ -15,6 +15,12 @@ class Layer extends NodeBasic implements NodeCollection {
         }
     }
 
+    drawDeferred(context: CanvasRenderingContext2D, stepAccumulator: Array<() => void>, commitAccumulator: Array<() => void>): void {
+        for (const child of this.children) {
+            child.drawDeferred(context, stepAccumulator, commitAccumulator);
+        }
+    }
+
     getBounds(): Bounds {
         let minX = Number.POSITIVE_INFINITY;
         let maxX = Number.NEGATIVE_INFINITY;

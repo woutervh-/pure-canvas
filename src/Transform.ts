@@ -24,10 +24,12 @@ export default class Transform extends Transformer {
         this._f = f;
     }
 
-    draw(context: CanvasRenderingContext2D): void {
+    preDraw(context: CanvasRenderingContext2D): void {
         context.save();
         context.transform(this._a, this._b, this._c, this._d, this._e, this._f);
-        super.draw(context);
+    }
+
+    postDraw(context: CanvasRenderingContext2D): void {
         context.restore();
     }
 

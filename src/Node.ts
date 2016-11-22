@@ -15,6 +15,8 @@ interface Node {
 
     draw(context: CanvasRenderingContext2D): void;
 
+    drawDeferred(context: CanvasRenderingContext2D, stepAccumulator: Array<() => void>, commitAccumulator: Array<() => void>): void;
+
     intersection(point: Point): Node;
 
     toImage(): HTMLCanvasElement;

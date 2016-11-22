@@ -7,6 +7,8 @@ abstract class NodeBasic implements NodeIndexable {
 
     abstract draw(context: CanvasRenderingContext2D): void;
 
+    abstract drawDeferred(context: CanvasRenderingContext2D, stepAccumulator: Array<() => void>, commitAccumulator: Array<() => void>): void;
+
     abstract intersection(point: Point): Node;
 
     toImage(): HTMLCanvasElement {

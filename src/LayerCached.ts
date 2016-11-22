@@ -18,4 +18,32 @@ export default class LayerCached extends Layer {
             context.drawImage(this.cache, minX, minY, maxX - minX, maxY - minY);
         }
     }
+
+    drawDeferred(context: CanvasRenderingContext2D, stepAccumulator: Array<() => void>, commitAccumulator: Array<() => void>): void {
+        const {minX, minY, maxX, maxY} = this.getBounds();
+
+        if (!this.cache) {
+            this.cache = document.createElement('canvas');
+            this.cache.width = maxX - minX;
+            this.cache.height = maxY - minY;
+            const cacheContext = this.cache.getContext('2d');
+            const cacheStepAccumulator: Array<() => void> = [];
+            const cacheCommitAccumulator: Array<() => void> = [];
+
+            cacheStepAccumulator.push(() => cacheContext.translate(-minX, -minY));
+            super.drawDeferred(cacheContext, cacheStepAccumulator, cacheCommitAccumulator);
+            cacheStepAccumulator.push(() => cacheContext.translate(minX, minY));
+
+            for (const cacheStep of cacheStepAccumulator) {
+                stepAccumulator.push(cacheStep);
+            }
+            for (const cacheCommit of cacheCommitAccumulator) {
+                stepAccumulator.push(cacheCommit);
+            }
+        }
+
+        commitAccumulator.push(() => {
+            context.drawImage(this.cache, minX, minY, maxX - minX, maxY - minY);
+        });
+    }
 };
