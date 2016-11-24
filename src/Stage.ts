@@ -84,25 +84,27 @@ export default class Stage extends EventEmitter implements NodeCollection {
         this.emitHitEvent('click', event);
     };
 
-    render(): void {
+    render(index: boolean = true): void {
         const {steps, commit} = this.renderDeferred();
         for (const step of steps) {
             step();
         }
-        commit();
+        commit(index);
     }
 
-    renderDeferred(): {steps: Array<() => void>, commit: () => void} {
+    renderDeferred(): {steps: Array<() => void>, commit: (index: boolean) => void} {
         const stepAccumulator: Array<() => void> = [];
         const commitAccumulator: Array<() => void> = [];
         this.internalLayer.drawDeferred(this.context, stepAccumulator, commitAccumulator);
 
-        const commit = () => {
+        const commit = (index: boolean = false) => {
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
             for (const commit of commitAccumulator) {
                 commit();
             }
-            this.index();
+            if (index) {
+                this.index();
+            }
         };
 
         return {steps: stepAccumulator, commit};
