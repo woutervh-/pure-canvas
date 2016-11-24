@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
     entry: './examples/main.tsx',
     output: {
-        filename: './dist/bundle.js',
+        filename: './dist/bundle.js'
     },
 
     devtool: 'source-map',
@@ -29,6 +29,6 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             title: 'Pure Canvas Examples'
-        }),
+        })
     ]
 };
