@@ -5,6 +5,7 @@ import Circle from '../src/Circle';
 import CanvasImage from '../src/Image';
 import Line from '../src/Line';
 import Rectangle from '../src/Rectangle';
+import MultiPolygon from '../src/MultiPolygon';
 import Translate from '../src/Translate';
 import Transform from '../src/Transform';
 import Scale from '../src/Scale';
@@ -36,6 +37,11 @@ class IdentifiedRectangle extends Rectangle {
     type: string = 'rectangle';
 }
 
+class IdentifiedMultiPolygon extends MultiPolygon {
+    id: number;
+    type: string = 'multi-polygon';
+}
+
 class App extends React.Component<{}, {}> {
     renderToCanvas(canvas: HTMLCanvasElement) {
         const triangleImage = new Image();
@@ -50,28 +56,33 @@ class App extends React.Component<{}, {}> {
             const hoverCircle = new Circle({radius: 10, fillStyle: 'white'});
             const hoverLine = new Line({x1: 0, y1: 0, x2: 15, y2: 15, lineWidth: 5});
             const hoverRectangle = new Rectangle({x1: 0, y1: 0, x2: 8, y2: 8, strokeStyle: 'red'});
+            const hoverMultiPolygon = new MultiPolygon({points: [[{x: 5, y: 5}, {x: 15, y: 5}, {x: 15, y: 15}, {x: 5, y: 15}], [{x: 7, y: 7}, {x: 7, y: 13}, {x: 13, y: 7}]], fillStyle: 'green'});
 
             for (let i = 0; i < 400; i++) {
                 const image = new IdentifiedImage({width: 20, height: 20, image: triangleImage});
                 const circle = new IdentifiedCircle({radius: 8, fillStyle: getRandomColor()});
                 const line = new IdentifiedLine({x1: 0, y1: 0, x2: 15, y2: 15, lineWidth: 3});
                 const rectangle = new IdentifiedRectangle({x1: 0, y1: 0, x2: 8, y2: 8});
+                const multiPolygon = new IdentifiedMultiPolygon({points: [[{x: 5, y: 5}, {x: 15, y: 5}, {x: 15, y: 15}, {x: 5, y: 15}], [{x: 7, y: 7}, {x: 7, y: 13}, {x: 13, y: 7}]]});
                 image.setHitEnabled(true);
                 circle.setHitEnabled(true);
                 line.setHitEnabled(true);
                 rectangle.setHitEnabled(true);
+                multiPolygon.setHitEnabled(true);
                 image.id = i;
                 circle.id = i;
                 line.id = i;
                 rectangle.id = i;
+                multiPolygon.id = i;
                 const layer = new Transform();
-                layer.rotate(Math.PI / 8);
+                // layer.rotate(Math.PI / 8);
                 layer.translate((i % 20) * 20, Math.floor(i / 20) * 20);
-                layer.scale(2, 1);
+                layer.scale(2, 2);
                 layer.add(image);
-                layer.add(circle);
-                layer.add(line);
-                layer.add(rectangle);
+                // layer.add(circle);
+                // layer.add(line);
+                // layer.add(rectangle);
+                layer.add(multiPolygon);
                 cachedLayer.add(layer);
             }
 
@@ -104,6 +115,11 @@ class App extends React.Component<{}, {}> {
                             hoverLayer.x = (node.id % 20) * 20;
                             hoverLayer.y = Math.floor(node.id / 20) * 20;
                             hoverLayer.add(hoverRectangle);
+                            break;
+                        case 'multi-polygon':
+                            hoverLayer.x = (node.id % 20) * 20;
+                            hoverLayer.y = Math.floor(node.id / 20) * 20;
+                            hoverLayer.add(hoverMultiPolygon);
                             break;
                         default:
                             break;
