@@ -11,15 +11,16 @@ abstract class NodeBasic implements NodeIndexable {
 
     abstract intersection(point: Point): Node;
 
-    toImage(): HTMLCanvasElement {
-        const {minX, minY, maxX, maxY} = this.getBounds();
+    toImage(clipRegion?: Bounds): HTMLCanvasElement {
+        const {minX, minY, maxX, maxY} = clipRegion ? clipRegion : this.getBounds();
+        const {minX: realMinX, minY: realMinY} = clipRegion ? this.getBounds() : {minX, minY};
         const canvas = document.createElement('canvas');
         canvas.width = maxX - minX;
         canvas.height = maxY - minY;
         const context = canvas.getContext('2d');
-        context.translate(-minX, -minY);
+        context.translate(-realMinX - minX, -realMinY - minY);
         this.draw(context);
-        context.translate(minX, minY);
+        context.translate(realMinX + minX, realMinY + minY);
         return canvas;
     }
 

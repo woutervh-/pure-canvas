@@ -90,6 +90,9 @@ export default class Stage extends EventEmitter implements NodeCollection {
             step();
         }
         commit(index);
+        // this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        // this.internalLayer.draw(this.context);
+        // this.index();
     }
 
     renderDeferred(): {steps: Array<() => void>, commit: (index: boolean) => void} {
