@@ -1,20 +1,22 @@
 import Node, {Bounds, Point} from './Node';
 import NodeFixedBounds from './NodeFixedBounds';
 
-export interface MultiPolygonParameters {
-    points: Array<Array<{x: number, y: number}>>;
+const zeroPoint: Point = {x: 0, y: 0};
+
+export interface PolygonParameters {
+    points: Array<Array<Point>>;
     strokeStyle?: string;
     lineWidth?: number;
     fillStyle?: string;
 }
 
-class MultiPolygon extends NodeFixedBounds {
-    private points: Array<Array<{x: number, y: number}>>;
+class Polygon extends NodeFixedBounds {
+    private points: Array<Array<Point>>;
     private strokeStyle: string;
     private lineWidth: number;
     private fillStyle: string;
 
-    constructor({points, strokeStyle = 'rgba(0, 0, 0, 1)', lineWidth = 1, fillStyle = 'rgba(255, 255, 255, 1)'}: MultiPolygonParameters) {
+    constructor({points, strokeStyle = 'rgba(0, 0, 0, 1)', lineWidth = 1, fillStyle = 'rgba(255, 255, 255, 1)'}: PolygonParameters) {
         let minX = Number.POSITIVE_INFINITY;
         let maxX = Number.NEGATIVE_INFINITY;
         let minY = Number.POSITIVE_INFINITY;
@@ -73,24 +75,33 @@ class MultiPolygon extends NodeFixedBounds {
     }
 
     intersection({x, y}: Point): Node {
-        // const {x1, y1, x2, y2, lineWidth} = this;
-        // const distance2 = (x2 - x1) ** 2 + (y2 - y1) ** 2;
-        // let t: number;
-        // if (distance2 === 0) {
-        //     t = 0;
-        // } else {
-        //     t = ((x - x1) * (x2 - x1) + (y - y1) * (y2 - y1)) / distance2;
-        // }
-        // if (0 <= t && t <= 1) {
-        //     const dx = x - (x1 + t * (x2 - x1));
-        //     const dy = y - (y1 + t * (y2 - y1));
-        //     if (dx ** 2 + dy ** 2 <= (lineWidth / 2) ** 2) {
-        //         return this;
-        //     }
-        // }
-        // TODO
-        return this;
+        const {points, lineWidth} = this;
+        const vertices: Array<Point> = [];
+
+        // TODO: algorithm should take lineWidth into account
+
+        vertices.push(zeroPoint);
+        for (let i = 0; i < points.length; i++) {
+            for (let j = 0; j < points[i].length; j++) {
+                vertices.push(points[i][j]);
+            }
+            if (points[i].length >= 1) {
+                vertices.push(points[i][0]);
+            }
+            vertices.push(zeroPoint);
+        }
+
+        let inside = false;
+        for (let i = 0, j = vertices.length - 1; i < vertices.length; j = i++) {
+            if (((vertices[i].y > y) !== (vertices[j].y > y)) && (x < (vertices[j].x - vertices[i].x) * (y - vertices[i].y) / (vertices[j].y - vertices[i].y) + vertices[i].x)) {
+                inside = !inside;
+            }
+        }
+
+        if (inside) {
+            return this;
+        }
     }
 }
 
-export default MultiPolygon;
+export default Polygon;
