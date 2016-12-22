@@ -50,7 +50,7 @@ class App extends React.Component<{}, {}> {
             const stage = new Stage(canvas);
             const hoverLayer = new Translate();
             const scaledHoverLayer = new Scale({x: 2, y: 2});
-            const cachedLayer = new LayerCached({clipRegion: {minX: 0, minY: 0, maxX: 400, maxY: 400}});
+            const cachedLayer = new LayerCached({clipRegion: {minX: 5, minY: 5, maxX: 395, maxY: 395}});
 
             const hoverImage = new CanvasImage({width: 24, height: 24, image: triangleImage});
             const hoverCircle = new Circle({radius: 10, fillStyle: 'white'});
