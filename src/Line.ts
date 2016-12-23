@@ -22,8 +22,8 @@ class Line extends NodeFixedBounds {
 
     constructor({x1, y1, x2, y2, strokeStyle = 'rgba(0, 0, 0, 1)', lineWidth = 1, lineCap = 'butt'}: LineParameters) {
         const minX = Math.min(x1, x2) - lineWidth / 2;
-        const maxX = Math.max(x1, x2) + lineWidth / 2;
         const minY = Math.min(y1, y2) - lineWidth / 2;
+        const maxX = Math.max(x1, x2) + lineWidth / 2;
         const maxY = Math.max(y1, y2) + lineWidth / 2;
         const bounds: Bounds = {minX, minY, maxX, maxY};
 
@@ -43,12 +43,12 @@ class Line extends NodeFixedBounds {
         const oldStrokeStyle = context.strokeStyle;
         const oldLineWidth = context.lineWidth;
         const oldLineCap = context.lineCap;
-        context.beginPath();
-        context.moveTo(x1, y1);
-        context.lineTo(x2, y2);
         context.strokeStyle = strokeStyle;
         context.lineWidth = lineWidth;
         context.lineCap = lineCap;
+        context.beginPath();
+        context.moveTo(x1, y1);
+        context.lineTo(x2, y2);
         if (lineWidth > 0) {
             context.stroke();
         }

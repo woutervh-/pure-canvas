@@ -17,16 +17,18 @@ class Polygon extends NodeFixedBounds {
     private fillStyle: string;
 
     constructor({points, strokeStyle = 'rgba(0, 0, 0, 1)', lineWidth = 1, fillStyle = 'rgba(255, 255, 255, 1)'}: PolygonParameters) {
+        // TODO: lineWidth to increase bounds
+
         let minX = Number.POSITIVE_INFINITY;
-        let maxX = Number.NEGATIVE_INFINITY;
         let minY = Number.POSITIVE_INFINITY;
+        let maxX = Number.NEGATIVE_INFINITY;
         let maxY = Number.NEGATIVE_INFINITY;
 
         for (let i = 0; i < points.length; i++) {
             for (let j = 0; j < points[i].length; j++) {
                 minX = Math.min(minX, points[i][j].x);
-                maxX = Math.max(maxX, points[i][j].x);
                 minY = Math.min(minY, points[i][j].y);
+                maxX = Math.max(maxX, points[i][j].x);
                 maxY = Math.max(maxY, points[i][j].y);
             }
         }

@@ -16,8 +16,8 @@ class Circle extends NodeFixedBounds {
 
     constructor({radius, lineWidth = 1, strokeStyle = 'rgba(0, 0, 0, 1)', fillStyle = 'rgba(255, 255, 255, 1)'}: CircleParameters) {
         const minX = -radius - lineWidth / 2;
-        const maxX = radius + lineWidth / 2;
         const minY = -radius - lineWidth / 2;
+        const maxX = radius + lineWidth / 2;
         const maxY = radius + lineWidth / 2;
         const bounds: Bounds = {minX, minY, maxX, maxY};
 
