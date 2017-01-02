@@ -2,37 +2,43 @@ import Node, {Point} from './Node';
 import NodeFixedBounds from './NodeFixedBounds';
 
 export interface ImageParameters {
+    x?: number;
+    y?: number;
     width: number;
     height: number;
     image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
 }
 
 class Image extends NodeFixedBounds {
+    private x: number;
+    private y: number;
     private width: number;
     private height: number;
     private image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
     private pixelArray: Uint8ClampedArray;
 
-    constructor({width, height, image}: ImageParameters) {
-        super({minX: 0, minY: 0, maxX: width, maxY: height});
+    constructor({x = 0, y = 0, width, height, image}: ImageParameters) {
+        super({minX: x, minY: y, maxX: x + width, maxY: y + height});
+        this.x = x;
+        this.y = y;
         this.width = width;
         this.height = height;
         this.image = image;
     }
 
     draw(context: CanvasRenderingContext2D): void {
-        const {width, height, image} = this;
+        const {x, y, width, height, image} = this;
         try {
-            context.drawImage(image, 0, 0, width, height);
+            context.drawImage(image, x, y, width, height);
         } catch (invalidStateError) {
             // Silently ignore
         }
     }
 
     intersection({x, y}: Point): Node {
-        const {width, height, image} = this;
-        const rx = Math.round(x);
-        const ry = Math.round(y);
+        const {x: ox, y: oy, width, height, image} = this;
+        const rx = Math.round(x - ox);
+        const ry = Math.round(y - oy);
 
         if (0 <= rx && rx <= width && 0 <= ry && ry <= height) {
             if (!this.pixelArray) {

@@ -91,7 +91,7 @@ class App extends React.Component<{}, {}> {
                 layer.add(image);
                 // layer.add(circle);
                 // layer.add(line);
-                layer.add(lineString);
+                // layer.add(lineString);
                 // layer.add(rectangle);
                 // layer.add(polygon);
                 cachedLayer.add(layer);
