@@ -18,10 +18,10 @@ export default class LayerCached extends Layer {
             const {minX: clipMinX, minY: clipMinY, maxX: clipMaxX, maxY: clipMaxY} = this.clipRegion;
             const {minX, minY, maxX, maxY} = super.getBounds();
             return {
-                minX: Math.min(minX, clipMinX),
-                minY: Math.min(minY, clipMinY),
-                maxX: Math.max(maxX, clipMaxX),
-                maxY: Math.max(maxY, clipMaxY)
+                minX: Math.max(minX, clipMinX),
+                minY: Math.max(minY, clipMinY),
+                maxX: Math.min(maxX, clipMaxX),
+                maxY: Math.min(maxY, clipMaxY)
             };
         } else {
             return super.getBounds();
