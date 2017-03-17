@@ -21,6 +21,14 @@ export default class LayerCached extends Layer {
         this.clipRegion = clipRegion;
     }
 
+    invalidateBuffer(): void {
+        this.cache = undefined;
+    }
+
+    invalidateIndex() {
+        this.treeManager = undefined;
+    }
+
     getBounds(): Bounds {
         if (this.clipRegion) {
             const {minX: clipMinX, minY: clipMinY, maxX: clipMaxX, maxY: clipMaxY} = this.clipRegion;
