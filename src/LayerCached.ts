@@ -25,7 +25,7 @@ export default class LayerCached extends Layer {
         this.cache = undefined;
     }
 
-    invalidateIndex() {
+    invalidateIndex(): void {
         this.treeManager = undefined;
     }
 
