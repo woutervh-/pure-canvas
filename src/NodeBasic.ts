@@ -23,7 +23,7 @@ abstract class NodeBasic implements NodeIndexable {
         return canvas;
     }
 
-    abstract index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number): void;
+    abstract index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number): number;
 
     abstract isHitEnabled(): boolean;
 

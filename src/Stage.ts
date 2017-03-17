@@ -1,16 +1,9 @@
-import Node, {Point} from './Node';
+import {EventEmitter} from 'eventemitter3';
+import Node from './Node';
 import NodeIndexable from './NodeIndexable';
 import NodeCollection from './NodeCollection';
-import Transformer from './Transformer';
-import {EventEmitter} from 'eventemitter3';
 import Layer from './Layer';
-import * as rbush from 'rbush';
-
-interface IndexedNode extends rbush.BBox {
-    transformers: Array<Transformer>;
-    node: Node;
-    zIndex: number;
-}
+import TreeManager from './TreeManager';
 
 export default class Stage extends EventEmitter implements NodeCollection {
     private canvas: HTMLCanvasElement;
@@ -19,7 +12,7 @@ export default class Stage extends EventEmitter implements NodeCollection {
 
     private internalLayer: Layer = new Layer();
 
-    private tree: rbush.RBush<IndexedNode> = rbush<IndexedNode>();
+    private treeManager: TreeManager = new TreeManager(this.internalLayer);
 
     constructor(canvas: HTMLCanvasElement) {
         super();
@@ -53,15 +46,7 @@ export default class Stage extends EventEmitter implements NodeCollection {
         this.emit(name, () => {
             if (!didSearch) {
                 const point = this.eventToElementCoordinate(event);
-                const results = this.tree
-                    .search({minX: point.x, minY: point.y, maxX: point.x, maxY: point.y})
-                    .sort((a: IndexedNode, b: IndexedNode) => b.zIndex - a.zIndex)
-                    .map((indexedNode: IndexedNode) => {
-                        const untransformedPoint = indexedNode.transformers.reduceRight((point: Point, transformer: Transformer) => transformer.untransform(point), point);
-                        return indexedNode.node.intersection(untransformedPoint);
-                    })
-                    .filter(Boolean);
-                result = results[0];
+                result = this.treeManager.intersection(point);
                 didSearch = true;
             }
             return result;
@@ -114,22 +99,7 @@ export default class Stage extends EventEmitter implements NodeCollection {
     }
 
     index(): void {
-        this.tree.clear();
-        this.internalLayer.index((node: Node, zIndex: number, transformers: Array<Transformer>) => {
-            const bounds = node.getBounds();
-            const {x: x1, y: y1} = transformers.reduce((point: Point, transformer: Transformer) => transformer.transform(point), {x: bounds.minX, y: bounds.minY});
-            const {x: x2, y: y2} = transformers.reduce((point: Point, transformer: Transformer) => transformer.transform(point), {x: bounds.maxX, y: bounds.maxY});
-            const {x: x3, y: y3} = transformers.reduce((point: Point, transformer: Transformer) => transformer.transform(point), {x: bounds.minX, y: bounds.maxY});
-            const {x: x4, y: y4} = transformers.reduce((point: Point, transformer: Transformer) => transformer.transform(point), {x: bounds.maxX, y: bounds.minY});
-            const minX = Math.min(x1, x2, x3, x4);
-            const minY = Math.min(y1, y2, y3, y4);
-            const maxX = Math.max(x1, x2, x3, x4);
-            const maxY = Math.max(y1, y2, y3, y4);
-            this.tree.insert({
-                minX, minY, maxX, maxY,
-                transformers, node, zIndex
-            });
-        }, 0);
+        this.treeManager.reindex();
     }
 
     add(node: NodeIndexable): number {

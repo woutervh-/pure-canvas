@@ -17,8 +17,9 @@ abstract class NodeLeaf extends NodeBasic {
         commitAccumulator.push(() => this.draw(context));
     }
 
-    index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number): void {
+    index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number): number {
         action(this, zIndex, emptyTransformers);
+        return zIndex;
     }
 
     isHitEnabled(): boolean {

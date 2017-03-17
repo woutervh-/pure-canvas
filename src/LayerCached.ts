@@ -1,12 +1,20 @@
-import {Bounds} from './Node';
+import Node, {Bounds, Point} from './Node';
 import Layer from './Layer';
+import Transformer from './Transformer';
+import TreeManager from './TreeManager';
+
+const emptyTransformers: Array<Transformer> = [];
 
 export default class LayerCached extends Layer {
     private caching: boolean = false;
 
+    private indexing: boolean = false;
+
     private cache: HTMLCanvasElement;
 
     private clipRegion?: Bounds;
+
+    private treeManager: TreeManager;
 
     constructor({clipRegion}: {clipRegion?: Bounds} = {}) {
         super();
@@ -71,5 +79,25 @@ export default class LayerCached extends Layer {
                 context.drawImage(this.cache, minX, minY, width, height);
             });
         }
+    }
+
+    index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number): number {
+        if (this.indexing) {
+            return super.index(action, zIndex);
+        } else {
+            action(this, zIndex, emptyTransformers);
+            return zIndex;
+        }
+    }
+
+    intersection(point: Point): Node {
+        if (!this.treeManager) {
+            this.indexing = true;
+            this.treeManager = new TreeManager(this);
+            this.treeManager.reindex();
+            this.indexing = false;
+        }
+
+        return this.treeManager.intersection(point);
     }
 };

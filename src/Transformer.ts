@@ -22,8 +22,8 @@ abstract class Transformer extends Layer {
         commitAccumulator.push(() => this.postDraw(context));
     }
 
-    index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number): void {
-        super.index((node: Node, zIndex: number, transformers: Array<Transformer>) => {
+    index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number): number {
+        return super.index((node: Node, zIndex: number, transformers: Array<Transformer>) => {
             action(node, zIndex, [...transformers, this]);
         }, zIndex);
     }

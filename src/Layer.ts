@@ -71,12 +71,13 @@ class Layer extends NodeBasic implements NodeCollection {
         }
     }
 
-    index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number): void {
+    index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number): number {
         for (const child of this.children) {
             if (child.isHitEnabled()) {
-                child.index(action, zIndex++);
+                zIndex = child.index(action, zIndex) + 1;
             }
         }
+        return zIndex;
     }
 
     isHitEnabled(): boolean {
