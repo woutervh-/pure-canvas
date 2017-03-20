@@ -74,7 +74,7 @@ export default class LayerCached extends Layer {
         }
     }
 
-    drawDeferred(context: CanvasRenderingContext2D, stepAccumulator: Array<() => void>, commitAccumulator: Array<() => void>): void {
+    drawDeferred(stepAccumulator: Array<() => void>, commitAccumulator: Array<(context: CanvasRenderingContext2D) => void>): void {
         const {minX, minY, maxX, maxY} = this.getBounds();
         const width = maxX - minX;
         const height = maxY - minY;
@@ -86,20 +86,20 @@ export default class LayerCached extends Layer {
                 this.cache.height = height;
                 const cacheContext = this.cache.getContext('2d');
                 const cacheStepAccumulator: Array<() => void> = [];
-                const cacheCommitAccumulator: Array<() => void> = [];
-                super.drawDeferred(cacheContext, cacheStepAccumulator, cacheCommitAccumulator);
+                const cacheCommitAccumulator: Array<(content: CanvasRenderingContext2D) => void> = [];
+                super.drawDeferred(cacheStepAccumulator, cacheCommitAccumulator);
 
                 stepAccumulator.push(() => cacheContext.translate(-minX, -minY));
                 for (const cacheStep of cacheStepAccumulator) {
                     stepAccumulator.push(cacheStep);
                 }
                 for (const cacheCommit of cacheCommitAccumulator) {
-                    stepAccumulator.push(cacheCommit);
+                    stepAccumulator.push(() => cacheCommit(cacheContext));
                 }
                 stepAccumulator.push(() => cacheContext.translate(minX, minY));
             }
 
-            commitAccumulator.push(() => {
+            commitAccumulator.push((context) => {
                 context.drawImage(this.cache, minX, minY, width, height);
             });
         }
@@ -138,5 +138,11 @@ export default class LayerCached extends Layer {
     removeAll(): void {
         this.invalidateAll();
         super.removeAll();
+    }
+
+    setClipRegion(clipRegion: Bounds): void {
+        this.invalidateBounds();
+        this.invalidateBuffer();
+        this.clipRegion = clipRegion;
     }
 };

@@ -16,10 +16,10 @@ abstract class Transformer extends Layer {
         this.postDraw(context);
     }
 
-    drawDeferred(context: CanvasRenderingContext2D, stepAccumulator: Array<() => void>, commitAccumulator: Array<() => void>): void {
-        commitAccumulator.push(() => this.preDraw(context));
-        super.drawDeferred(context, stepAccumulator, commitAccumulator);
-        commitAccumulator.push(() => this.postDraw(context));
+    drawDeferred(stepAccumulator: Array<() => void>, commitAccumulator: Array<(context: CanvasRenderingContext2D) => void>): void {
+        commitAccumulator.push((context) => this.preDraw(context));
+        super.drawDeferred(stepAccumulator, commitAccumulator);
+        commitAccumulator.push((context) => this.postDraw(context));
     }
 
     index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number): number {

@@ -105,9 +105,6 @@ export default class Stage extends EventEmitter implements NodeCollection {
                 repeat();
             } else {
                 commit(index);
-                if (callback) {
-                    callback();
-                }
             }
         };
         repeat();
@@ -115,13 +112,13 @@ export default class Stage extends EventEmitter implements NodeCollection {
 
     renderDeferred(): {steps: Array<() => void>, commit: (index: boolean) => void} {
         const stepAccumulator: Array<() => void> = [];
-        const commitAccumulator: Array<() => void> = [];
-        this.internalLayer.drawDeferred(this.context, stepAccumulator, commitAccumulator);
+        const commitAccumulator: Array<(context: CanvasRenderingContext2D) => void> = [];
+        this.internalLayer.drawDeferred(stepAccumulator, commitAccumulator);
 
         const commit = (index: boolean = false) => {
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
             for (const commit of commitAccumulator) {
-                commit();
+                commit(this.context);
             }
             if (index) {
                 this.index();

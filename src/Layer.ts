@@ -15,9 +15,9 @@ class Layer extends NodeBasic implements NodeCollection {
         }
     }
 
-    drawDeferred(context: CanvasRenderingContext2D, stepAccumulator: Array<() => void>, commitAccumulator: Array<() => void>): void {
+    drawDeferred(stepAccumulator: Array<() => void>, commitAccumulator: Array<(context: CanvasRenderingContext2D) => void>): void {
         for (const child of this.children) {
-            child.drawDeferred(context, stepAccumulator, commitAccumulator);
+            child.drawDeferred(stepAccumulator, commitAccumulator);
         }
     }
 

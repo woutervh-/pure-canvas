@@ -15,7 +15,7 @@ interface Node {
 
     draw(context: CanvasRenderingContext2D): void;
 
-    drawDeferred(context: CanvasRenderingContext2D, stepAccumulator: Array<() => void>, commitAccumulator: Array<() => void>): void;
+    drawDeferred(stepAccumulator: Array<() => void>, commitAccumulator: Array<(context: CanvasRenderingContext2D) => void>): void;
 
     intersection(point: Point): Node;
 
