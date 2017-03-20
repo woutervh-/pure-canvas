@@ -14,6 +14,8 @@ export default class Stage extends EventEmitter implements NodeCollection {
 
     private treeManager: TreeManager = new TreeManager(this.internalLayer);
 
+    private nonBlockingTimeoutId?: number;
+
     constructor(canvas: HTMLCanvasElement) {
         super();
         this.canvas = canvas;
@@ -71,13 +73,41 @@ export default class Stage extends EventEmitter implements NodeCollection {
 
     render(index: boolean = true): void {
         const {steps, commit} = this.renderDeferred();
+
         for (const step of steps) {
             step();
         }
         commit(index);
+
         // this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         // this.internalLayer.draw(this.context);
         // this.index();
+    }
+
+    renderAsynchronous(index: boolean = true, maxBatchTime: number = 10): void {
+        const {steps, commit} = this.renderDeferred();
+
+        if (this.nonBlockingTimeoutId) {
+            window.clearTimeout(this.nonBlockingTimeoutId);
+        }
+
+        let i = 0;
+        const repeat = () => {
+            this.nonBlockingTimeoutId = window.setTimeout(batch, 0);
+        };
+        const batch = () => {
+            const deadline = Date.now() + maxBatchTime;
+            while (i < steps.length && Date.now() < deadline) {
+                steps[i++]();
+            }
+            commit(false);
+            if (i < steps.length) {
+                repeat();
+            } else {
+                commit(index);
+            }
+        };
+        repeat();
     }
 
     renderDeferred(): {steps: Array<() => void>, commit: (index: boolean) => void} {
