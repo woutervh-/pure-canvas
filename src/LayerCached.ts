@@ -2,6 +2,7 @@ import Node, {Bounds, Point} from './Node';
 import Layer from './Layer';
 import Transformer from './Transformer';
 import TreeManager from './TreeManager';
+import NodeIndexable from './NodeIndexable';
 
 const emptyTransformers: Array<Transformer> = [];
 
@@ -21,6 +22,12 @@ export default class LayerCached extends Layer {
     constructor({clipRegion}: {clipRegion?: Bounds} = {}) {
         super();
         this.clipRegion = clipRegion;
+    }
+
+    invalidateAll(): void {
+        this.invalidateBuffer();
+        this.invalidateIndex();
+        this.invalidateBounds();
     }
 
     invalidateBuffer(): void {
@@ -116,5 +123,20 @@ export default class LayerCached extends Layer {
         }
 
         return this.treeManager.intersection(point);
+    }
+
+    add(node: NodeIndexable): number {
+        this.invalidateAll();
+        return super.add(node);
+    }
+
+    remove(a: number | NodeIndexable): void {
+        this.invalidateAll();
+        super.remove(a);
+    }
+
+    removeAll(): void {
+        this.invalidateAll();
+        super.removeAll();
     }
 };
