@@ -84,7 +84,7 @@ export default class Stage extends EventEmitter implements NodeCollection {
         // this.index();
     }
 
-    renderAsynchronous(index: boolean = true, callback?: () => void, maxBatchTime: number = 10): void {
+    renderAsynchronous(index: boolean = true, maxBatchTime: number = 10): void {
         const {steps, commit} = this.renderDeferred();
 
         if (this.nonBlockingTimeoutId) {
