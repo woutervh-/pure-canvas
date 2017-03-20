@@ -14,6 +14,8 @@ export default class LayerCached extends Layer {
 
     private clipRegion?: Bounds;
 
+    private cachedBounds?: Bounds;
+
     private treeManager: TreeManager;
 
     constructor({clipRegion}: {clipRegion?: Bounds} = {}) {
@@ -29,19 +31,26 @@ export default class LayerCached extends Layer {
         this.treeManager = undefined;
     }
 
+    invalidateBounds(): void {
+        this.cachedBounds = undefined;
+    }
+
     getBounds(): Bounds {
-        if (this.clipRegion) {
-            const {minX: clipMinX, minY: clipMinY, maxX: clipMaxX, maxY: clipMaxY} = this.clipRegion;
-            const {minX, minY, maxX, maxY} = super.getBounds();
-            return {
-                minX: Math.max(minX, clipMinX),
-                minY: Math.max(minY, clipMinY),
-                maxX: Math.min(maxX, clipMaxX),
-                maxY: Math.min(maxY, clipMaxY)
-            };
-        } else {
-            return super.getBounds();
+        if (!this.cachedBounds) {
+            if (this.clipRegion) {
+                const {minX: clipMinX, minY: clipMinY, maxX: clipMaxX, maxY: clipMaxY} = this.clipRegion;
+                const {minX, minY, maxX, maxY} = super.getBounds();
+                this.cachedBounds = {
+                    minX: Math.max(minX, clipMinX),
+                    minY: Math.max(minY, clipMinY),
+                    maxX: Math.min(maxX, clipMaxX),
+                    maxY: Math.min(maxY, clipMaxY)
+                };
+            } else {
+                this.cachedBounds = super.getBounds();
+            }
         }
+        return this.cachedBounds;
     }
 
     draw(context: CanvasRenderingContext2D): void {
