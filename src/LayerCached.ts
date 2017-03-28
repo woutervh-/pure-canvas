@@ -79,7 +79,7 @@ export default class LayerCached extends Layer {
         const width = maxX - minX;
         const height = maxY - minY;
 
-        if (width > 0 && height > 0) {
+        if (Math.floor(width) > 0 && Math.floor(height) > 0) {
             if (!this.cache) {
                 this.cache = document.createElement('canvas');
                 this.cache.width = width;
