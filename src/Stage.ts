@@ -1,16 +1,11 @@
 import {EventEmitter} from 'eventemitter3';
 import Node from './Node';
-import NodeIndexable from './NodeIndexable';
-import NodeCollection from './NodeCollection';
-import Layer from './Layer';
 import TreeManager from './TreeManager';
 
-export default class Stage extends EventEmitter implements NodeCollection {
+export default class Stage extends EventEmitter {
     private canvas: HTMLCanvasElement;
 
     private context: CanvasRenderingContext2D;
-
-    private internalLayer: Layer = new Layer();
 
     private treeManager: TreeManager = new TreeManager(this.internalLayer);
 
@@ -130,21 +125,5 @@ export default class Stage extends EventEmitter implements NodeCollection {
 
     index(): void {
         this.treeManager.reindex();
-    }
-
-    add(node: NodeIndexable): number {
-        return this.internalLayer.add(node);
-    }
-
-    remove(a: number|NodeIndexable): void {
-        this.internalLayer.remove(a);
-    }
-
-    removeAll(): void {
-        this.internalLayer.removeAll();
-    }
-
-    count(): number {
-        return this.internalLayer.count();
     }
 };
