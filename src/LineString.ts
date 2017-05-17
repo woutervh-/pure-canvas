@@ -15,6 +15,8 @@ class LineString extends NodeFixedBounds {
     private lineCap: string;
 
     constructor({points, strokeStyle = 'rgba(0, 0, 0, 1)', lineWidth = 1, lineCap = 'butt'}: LineStringParameters) {
+        // TODO: lineWidth to increase bounds
+
         let minX = Number.POSITIVE_INFINITY;
         let minY = Number.POSITIVE_INFINITY;
         let maxX = Number.NEGATIVE_INFINITY;

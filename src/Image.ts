@@ -46,7 +46,11 @@ class Image extends NodeFixedBounds {
                 hitCanvas.width = width;
                 hitCanvas.height = height;
                 const hitContext: CanvasRenderingContext2D = hitCanvas.getContext('2d');
-                hitContext.drawImage(image, 0, 0, width, height);
+                try {
+                    hitContext.drawImage(image, 0, 0, width, height);
+                } catch (invalidStateError) {
+                    // Silently ignore
+                }
                 this.pixelArray = hitContext.getImageData(0, 0, width, height).data;
             }
 
