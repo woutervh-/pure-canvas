@@ -9,6 +9,10 @@ class Layer extends NodeBasic implements NodeCollection {
 
     private children: Array<NodeIndexable> = [];
 
+    constructor() {
+        super();
+    }
+
     draw(context: CanvasRenderingContext2D): void {
         for (const child of this.children) {
             child.draw(context);

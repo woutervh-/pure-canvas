@@ -13,6 +13,10 @@ abstract class NodeLeaf extends NodeBasic {
 
     abstract intersection(point: Point): Node;
 
+    constructor() {
+        super();
+    }
+
     drawDeferred(stepAccumulator: Array<() => void>, commitAccumulator: Array<(context: CanvasRenderingContext2D) => void>): void {
         commitAccumulator.push((context) => this.draw(context));
     }

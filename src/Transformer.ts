@@ -10,6 +10,10 @@ abstract class Transformer extends Layer {
 
     abstract postDraw(context: CanvasRenderingContext2D): void;
 
+    constructor() {
+        super();
+    }
+
     draw(context: CanvasRenderingContext2D): void {
         this.preDraw(context);
         super.draw(context);
