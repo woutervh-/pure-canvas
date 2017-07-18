@@ -3,3 +3,6 @@ node_modules/
 
 # Examples dist/ folder
 dist/
+
+# Log files
+*.log
