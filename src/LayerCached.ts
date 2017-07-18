@@ -15,13 +15,16 @@ export default class LayerCached extends Layer {
 
     private clipRegion?: Bounds;
 
+    private batchSize: number;
+
     private cachedBounds?: Bounds;
 
     private treeManager: TreeManager;
 
-    constructor({clipRegion}: {clipRegion?: Bounds} = {}) {
+    constructor({clipRegion, batchSize = 128}: {clipRegion?: Bounds, batchSize?: number} = {}) {
         super();
         this.clipRegion = clipRegion;
+        this.batchSize = batchSize;
     }
 
     invalidateAll(): void {
@@ -90,11 +93,18 @@ export default class LayerCached extends Layer {
                 super.drawDeferred(cacheStepAccumulator, cacheCommitAccumulator);
 
                 stepAccumulator.push(() => cacheContext.translate(-minX, -minY));
-                for (const cacheStep of cacheStepAccumulator) {
-                    stepAccumulator.push(cacheStep);
-                }
-                for (const cacheCommit of cacheCommitAccumulator) {
-                    stepAccumulator.push(() => cacheCommit(cacheContext));
+                for (let i = 0; i < cacheStepAccumulator.length + cacheCommitAccumulator.length; i += this.batchSize) {
+                    const start = i;
+                    const end = Math.min(cacheStepAccumulator.length + cacheCommitAccumulator.length, start + this.batchSize);
+                    stepAccumulator.push(() => {
+                        for (let i = start; i < end; i++) {
+                            if (i < cacheStepAccumulator.length) {
+                                cacheStepAccumulator[i]();
+                            } else {
+                                cacheCommitAccumulator[i - cacheStepAccumulator.length](cacheContext);
+                            }
+                        }
+                    });
                 }
                 stepAccumulator.push(() => cacheContext.translate(minX, minY));
             }
