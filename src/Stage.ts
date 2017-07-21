@@ -1,18 +1,14 @@
 import {EventEmitter} from 'eventemitter3';
 import Node from './Node';
 import NodeIndexable from './NodeIndexable';
-import NodeCollection from './NodeCollection';
 import Layer from './Layer';
-import TreeManager from './TreeManager';
 
-export default class Stage extends EventEmitter implements NodeCollection {
+export default class Stage extends EventEmitter {
     private canvas: HTMLCanvasElement;
 
     private context: CanvasRenderingContext2D;
 
-    private internalLayer: Layer = new Layer();
-
-    private treeManager: TreeManager = new TreeManager(this.internalLayer);
+    private internalNode?: Node;
 
     private nonBlockingTimeoutId?: number;
 
@@ -46,9 +42,9 @@ export default class Stage extends EventEmitter implements NodeCollection {
         let didSearch: boolean = false;
         let result: Node = undefined;
         this.emit(name, () => {
-            if (!didSearch) {
+            if (!didSearch && this.internalNode) {
                 const point = this.eventToElementCoordinate(event);
-                result = this.treeManager.intersection(point);
+                result = this.internalNode.intersection(point);
                 didSearch = true;
             }
             return result;
@@ -71,21 +67,15 @@ export default class Stage extends EventEmitter implements NodeCollection {
         this.emitHitEvent('click', event);
     };
 
-    render(index: boolean = true): void {
-        const {steps, commit} = this.renderDeferred();
-
-        for (const step of steps) {
-            step();
+    render(): void {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        if (this.internalNode) {
+            this.internalNode.draw(this.context);
         }
-        commit(index);
-
-        // this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        // this.internalLayer.draw(this.context);
-        // this.index();
     }
 
     renderAsynchronous(index: boolean = true, maxBatchTime: number = 10): void {
-        const {steps, commit} = this.renderDeferred();
+        const steps = this.node.steps();
 
         if (this.nonBlockingTimeoutId) {
             window.clearTimeout(this.nonBlockingTimeoutId);
@@ -110,41 +100,11 @@ export default class Stage extends EventEmitter implements NodeCollection {
         repeat();
     }
 
-    renderDeferred(): {steps: Array<() => void>, commit: (index: boolean) => void} {
-        const stepAccumulator: Array<() => void> = [];
-        const commitAccumulator: Array<(context: CanvasRenderingContext2D) => void> = [];
-        this.internalLayer.drawDeferred(stepAccumulator, commitAccumulator);
-
-        const commit = (index: boolean = false) => {
-            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            for (const commit of commitAccumulator) {
-                commit(this.context);
-            }
-            if (index) {
-                this.index();
-            }
-        };
-
-        return {steps: stepAccumulator, commit};
+    get node(): Node {
+        return this.internalNode;
     }
 
-    index(): void {
-        this.treeManager.reindex();
-    }
-
-    add(node: NodeIndexable): number {
-        return this.internalLayer.add(node);
-    }
-
-    remove(a: number|NodeIndexable): void {
-        this.internalLayer.remove(a);
-    }
-
-    removeAll(): void {
-        this.internalLayer.removeAll();
-    }
-
-    count(): number {
-        return this.internalLayer.count();
+    set node(value: Node) {
+        this.internalNode = value;
     }
 };

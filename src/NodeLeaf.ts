@@ -1,4 +1,4 @@
-import Node, {Point, Bounds} from './Node';
+import Node, {Point, Bounds, StepGenerator} from './Node';
 import NodeBasic from './NodeBasic';
 import Transformer from './Transformer';
 
@@ -17,8 +17,17 @@ abstract class NodeLeaf extends NodeBasic {
         super();
     }
 
-    drawDeferred(stepAccumulator: Array<() => void>, commitAccumulator: Array<(context: CanvasRenderingContext2D) => void>): void {
-        commitAccumulator.push((context) => this.draw(context));
+    private generator = {
+        next: (commit, context) => {
+            if (commit) {
+                this.draw(context);
+            }
+            return true;
+        }
+    };
+
+    steps(): StepGenerator {
+        return this.generator;
     }
 
     index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number): number {

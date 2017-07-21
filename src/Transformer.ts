@@ -1,4 +1,4 @@
-import Node, {Point} from './Node';
+import Node, {Point, StepGenerator} from './Node';
 import Layer from './Layer';
 
 abstract class Transformer extends Layer {
@@ -20,10 +20,27 @@ abstract class Transformer extends Layer {
         this.postDraw(context);
     }
 
-    drawDeferred(stepAccumulator: Array<() => void>, commitAccumulator: Array<(context: CanvasRenderingContext2D) => void>): void {
-        commitAccumulator.push((context) => this.preDraw(context));
-        super.drawDeferred(stepAccumulator, commitAccumulator);
-        commitAccumulator.push((context) => this.postDraw(context));
+    steps(): StepGenerator {
+        const steps = super.steps();
+        let hasPreDrawn = false;
+        let hasPostDrawn = false;
+
+        return {
+            next: (commit, context) => {
+                if (hasPostDrawn) {
+                    return true;
+                }
+                if (!hasPreDrawn) {
+                    this.preDraw(context);
+                }
+                const result = steps.next(commit, context);
+                if (result) {
+                    this.postDraw(context);
+                    hasPostDrawn = true;
+                }
+                return false;
+            }
+        };
     }
 
     index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number): number {

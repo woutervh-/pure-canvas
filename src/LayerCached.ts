@@ -1,4 +1,4 @@
-import Node, {Bounds, Point} from './Node';
+import Node, {Bounds, Point, StepGenerator} from './Node';
 import Layer from './Layer';
 import Transformer from './Transformer';
 import TreeManager from './TreeManager';
@@ -15,16 +15,13 @@ export default class LayerCached extends Layer {
 
     private clipRegion?: Bounds;
 
-    private batchSize: number;
-
     private cachedBounds?: Bounds;
 
     private treeManager: TreeManager;
 
-    constructor({clipRegion, batchSize = 128}: {clipRegion?: Bounds, batchSize?: number} = {}) {
+    constructor({clipRegion}: {clipRegion?: Bounds} = {}) {
         super();
         this.clipRegion = clipRegion;
-        this.batchSize = batchSize;
     }
 
     invalidateAll(): void {
@@ -77,42 +74,34 @@ export default class LayerCached extends Layer {
         }
     }
 
-    drawDeferred(stepAccumulator: Array<() => void>, commitAccumulator: Array<(context: CanvasRenderingContext2D) => void>): void {
+    steps(): StepGenerator {
         const {minX, minY, maxX, maxY} = this.getBounds();
         const width = maxX - minX;
         const height = maxY - minY;
 
-        if (Math.floor(width) > 0 && Math.floor(height) > 0) {
-            if (!this.cache) {
-                this.cache = document.createElement('canvas');
-                this.cache.width = width;
-                this.cache.height = height;
-                const cacheContext = this.cache.getContext('2d');
-                const cacheStepAccumulator: Array<() => void> = [];
-                const cacheCommitAccumulator: Array<(content: CanvasRenderingContext2D) => void> = [];
-                super.drawDeferred(cacheStepAccumulator, cacheCommitAccumulator);
-
-                stepAccumulator.push(() => cacheContext.translate(-minX, -minY));
-                for (let i = 0; i < cacheStepAccumulator.length + cacheCommitAccumulator.length; i += this.batchSize) {
-                    const start = i;
-                    const end = Math.min(cacheStepAccumulator.length + cacheCommitAccumulator.length, start + this.batchSize);
-                    stepAccumulator.push(() => {
-                        for (let i = start; i < end; i++) {
-                            if (i < cacheStepAccumulator.length) {
-                                cacheStepAccumulator[i]();
-                            } else {
-                                cacheCommitAccumulator[i - cacheStepAccumulator.length](cacheContext);
-                            }
-                        }
-                    });
-                }
-                stepAccumulator.push(() => cacheContext.translate(minX, minY));
-            }
-
-            commitAccumulator.push((context) => {
-                context.drawImage(this.cache, minX, minY, width, height);
-            });
+        let generator, cacheContext, done = false;
+        if (!this.cache) {
+            this.cache = document.createElement('canvas');
+            this.cache.width = width;
+            this.cache.height = height;
+            generator = super.steps();
+            cacheContext = this.cache.getContext('2d');
         }
+
+        return {
+            next: (commit, context) => {
+                if (commit) {
+                    context.drawImage(this.cache, minX, minY, width, height);
+                    return !generator || done;
+                } else {
+                    if (generator) {
+                        return generator.next(false, cacheContext);
+                    } else {
+                        return true;
+                    }
+                }
+            }
+        };
     }
 
     index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number): number {

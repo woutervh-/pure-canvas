@@ -1,4 +1,4 @@
-import Node, {Point, Bounds} from './Node';
+import Node, {Point, Bounds, StepGenerator} from './Node';
 import NodeIndexable from './NodeIndexable';
 import NodeCollection from './NodeCollection';
 import NodeBasic from './NodeBasic';
@@ -19,10 +19,27 @@ class Layer extends NodeBasic implements NodeCollection {
         }
     }
 
-    drawDeferred(stepAccumulator: Array<() => void>, commitAccumulator: Array<(context: CanvasRenderingContext2D) => void>): void {
-        for (const child of this.children) {
-            child.drawDeferred(stepAccumulator, commitAccumulator);
-        }
+    steps(): StepGenerator {
+        let index = 0;
+        let generator = null;
+
+        return {
+            next: (commit, context) => {
+                if (!commit) {
+                    if (!generator) {
+                        if (index >= this.children.length) {
+                            return true;
+                        }
+                        generator = this.children[index++].steps();
+                    }
+                    if (generator.next(false, context)) {
+                        generator.next(true, context);
+                        generator = null;
+                    }
+                }
+                return false;
+            }
+        };
     }
 
     getBounds(): Bounds {
