@@ -1,4 +1,4 @@
-import Node, {Point, Bounds, StepGenerator} from './Node';
+import Node, {Point, Bounds} from './Node';
 import NodeBasic from './NodeBasic';
 import Transformer from './Transformer';
 
@@ -17,16 +17,14 @@ abstract class NodeLeaf extends NodeBasic {
         super();
     }
 
-    private generator = {
-        next: (commit, context) => {
-            if (commit) {
-                this.draw(context);
-            }
-            return true;
+    private generator = (context?: CanvasRenderingContext2D) => {
+        if (context) {
+            this.draw(context);
         }
+        return true;
     };
 
-    steps(): StepGenerator {
+    steps(): (context?: CanvasRenderingContext2D) => boolean {
         return this.generator;
     }
 

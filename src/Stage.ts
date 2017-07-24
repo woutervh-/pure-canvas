@@ -74,30 +74,29 @@ export default class Stage extends EventEmitter {
         }
     }
 
-    renderAsynchronous(index: boolean = true, maxBatchTime: number = 10): void {
-        const steps = this.node.steps();
+    renderAsynchronous(maxBatchTime: number = 10): void {
+        const that = this;
+        const next = this.node.steps();
+        let done = false;
 
-        if (this.nonBlockingTimeoutId) {
-            window.clearTimeout(this.nonBlockingTimeoutId);
-        }
+        (function batch() {
+            if (that.nonBlockingTimeoutId) {
+                window.clearTimeout(that.nonBlockingTimeoutId);
+            }
 
-        let i = 0;
-        const repeat = () => {
-            this.nonBlockingTimeoutId = window.setTimeout(batch, 0);
-        };
-        const batch = () => {
-            const deadline = Date.now() + maxBatchTime;
-            while (i < steps.length && Date.now() < deadline) {
-                steps[i++]();
+            const deadline = performance.now() + maxBatchTime;
+            // while (!done && performance.now() < deadline) {
+            if (!done) {
+                done = next();
             }
-            commit(false);
-            if (i < steps.length) {
-                repeat();
-            } else {
-                commit(index);
+            //}
+
+            that.context.clearRect(0, 0, that.canvas.width, that.canvas.height);
+            next(that.context);
+            if (!done) {
+                that.nonBlockingTimeoutId = window.setTimeout(batch, 0);
             }
-        };
-        repeat();
+        })();
     }
 
     get node(): Node {

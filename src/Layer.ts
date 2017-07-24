@@ -1,4 +1,4 @@
-import Node, {Point, Bounds, StepGenerator} from './Node';
+import Node, {Point, Bounds} from './Node';
 import NodeIndexable from './NodeIndexable';
 import NodeCollection from './NodeCollection';
 import NodeBasic from './NodeBasic';
@@ -7,7 +7,7 @@ import Transformer from './Transformer';
 class Layer extends NodeBasic implements NodeCollection {
     private hitEnabled: boolean = true;
 
-    private children: Array<NodeIndexable> = [];
+    protected children: Array<NodeIndexable> = [];
 
     constructor() {
         super();
@@ -19,26 +19,22 @@ class Layer extends NodeBasic implements NodeCollection {
         }
     }
 
-    steps(): StepGenerator {
+    steps(): (context?: CanvasRenderingContext2D) => boolean {
+        const generators = this.children.map((child) => child.steps());
         let index = 0;
-        let generator = null;
-
-        return {
-            next: (commit, context) => {
-                if (!commit) {
-                    if (!generator) {
-                        if (index >= this.children.length) {
-                            return true;
-                        }
-                        generator = this.children[index++].steps();
-                    }
-                    if (generator.next(false, context)) {
-                        generator.next(true, context);
-                        generator = null;
+        return (context) => {
+            if (context) {
+                for (const generator of generators) {
+                    generator(context);
+                }
+            } else {
+                if (index < this.children.length) {
+                    if (generators[index]()) {
+                        index += 1;
                     }
                 }
-                return false;
             }
+            return index >= this.children.length;
         };
     }
 

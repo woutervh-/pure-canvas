@@ -1,4 +1,4 @@
-import Node, {Point, StepGenerator} from './Node';
+import Node, {Point} from './Node';
 import Layer from './Layer';
 
 abstract class Transformer extends Layer {
@@ -20,25 +20,16 @@ abstract class Transformer extends Layer {
         this.postDraw(context);
     }
 
-    steps(): StepGenerator {
-        const steps = super.steps();
-        let hasPreDrawn = false;
-        let hasPostDrawn = false;
-
-        return {
-            next: (commit, context) => {
-                if (hasPostDrawn) {
-                    return true;
-                }
-                if (!hasPreDrawn) {
-                    this.preDraw(context);
-                }
-                const result = steps.next(commit, context);
-                if (result) {
-                    this.postDraw(context);
-                    hasPostDrawn = true;
-                }
-                return false;
+    steps(): (context?: CanvasRenderingContext2D) => boolean {
+        const next = super.steps();
+        return (context) => {
+            if (context) {
+                this.preDraw(context);
+                const result = next(context);
+                this.postDraw(context);
+                return result;
+            } else {
+                return next();
             }
         };
     }

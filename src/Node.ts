@@ -10,17 +10,12 @@ export interface Point {
     y: number;
 }
 
-export interface StepGenerator {
-    // next(...) should return false iff there are more compute steps to be made, once true is returned it should always be true
-    next: (commit: boolean, context: CanvasRenderingContext2D) => boolean;
-}
-
 interface Node {
     getBounds(): Bounds;
 
     draw(context: CanvasRenderingContext2D): void;
 
-    steps(): StepGenerator;
+    steps(): (context?: CanvasRenderingContext2D) => boolean;
 
     intersection(point: Point): Node;
 

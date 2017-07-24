@@ -1,8 +1,8 @@
-import Node, {Bounds, Point, StepGenerator} from './Node';
-import Layer from './Layer';
+import Node, {Bounds, Point} from './Node';
 import Transformer from './Transformer';
 import TreeManager from './TreeManager';
 import NodeIndexable from './NodeIndexable';
+import Layer from './Layer';
 
 const emptyTransformers: Array<Transformer> = [];
 
@@ -74,39 +74,60 @@ export default class LayerCached extends Layer {
         }
     }
 
-    steps(): StepGenerator {
+    steps(): (context?: CanvasRenderingContext2D) => boolean {
         const {minX, minY, maxX, maxY} = this.getBounds();
         const width = maxX - minX;
         const height = maxY - minY;
+        console.log(minX, minY, maxX, maxY)
 
-        let generator, cacheContext, done = false;
-        if (!this.cache) {
+        if (this.cache) {
+            return (context) => {
+                if (context) {
+                    context.drawImage(this.cache, minX, minY, width, height);
+                }
+                return true;
+            };
+        } else {
             this.cache = document.createElement('canvas');
             this.cache.width = width;
             this.cache.height = height;
-            generator = super.steps();
-            cacheContext = this.cache.getContext('2d');
-        }
+            const cacheContext = this.cache.getContext('2d');
 
-        return {
-            next: (commit, context) => {
-                if (commit) {
+            let next: (context?: CanvasRenderingContext2D) => boolean;
+            let index: number = 0;
+            return (context) => {
+                if (context) {
                     context.drawImage(this.cache, minX, minY, width, height);
-                    return !generator || done;
                 } else {
-                    if (generator) {
-                        return generator.next(false, cacheContext);
-                    } else {
-                        return true;
+                    if (!next) {
+                        if (index === 0) {
+                            cacheContext.translate(-minX, -minY);
+                        }
+                        if (index < this.children.length) {
+                            next = this.children[index++].steps();
+                        }
+                    }
+                    if (next && next()) {
+                        next(cacheContext);
+                        next = null;
+                        if (index === this.children.length) {
+                            cacheContext.translate(minX, minY);
+                        }
                     }
                 }
-            }
-        };
+                return !next && index >= this.children.length;
+            };
+        }
     }
 
     index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number): number {
         if (this.indexing) {
-            return super.index(action, zIndex);
+            for (const child of this.children) {
+                if (child.isHitEnabled()) {
+                    zIndex = child.index(action, zIndex) + 1;
+                }
+            }
+            return zIndex;
         } else {
             action(this, zIndex, emptyTransformers);
             return zIndex;
@@ -122,21 +143,6 @@ export default class LayerCached extends Layer {
         }
 
         return this.treeManager.intersection(point);
-    }
-
-    add(node: NodeIndexable): number {
-        this.invalidateAll();
-        return super.add(node);
-    }
-
-    remove(a: number | NodeIndexable): void {
-        this.invalidateAll();
-        super.remove(a);
-    }
-
-    removeAll(): void {
-        this.invalidateAll();
-        super.removeAll();
     }
 
     setClipRegion(clipRegion: Bounds): void {

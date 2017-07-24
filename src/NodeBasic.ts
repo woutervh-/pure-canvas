@@ -1,4 +1,4 @@
-import Node, {Bounds, Point, StepGenerator} from './Node';
+import Node, {Bounds, Point} from './Node';
 import NodeIndexable from './NodeIndexable';
 import Transformer from './Transformer';
 
@@ -7,7 +7,7 @@ abstract class NodeBasic implements NodeIndexable {
 
     abstract draw(context: CanvasRenderingContext2D): void;
 
-    abstract steps(): StepGenerator;
+    abstract steps(): (context?: CanvasRenderingContext2D) => boolean;
 
     abstract intersection(point: Point): Node;
 

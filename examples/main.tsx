@@ -12,6 +12,7 @@ import Transform from '../src/Transform';
 import Scale from '../src/Scale';
 import colors from './colors';
 import * as triangle from './triangle.svg';
+import Layer from '../src/Layer';
 import LayerCached from '../src/LayerCached';
 
 function getRandomColor() {
@@ -69,7 +70,7 @@ class App extends React.Component<{}, {}> {
             const hoverRectangle = new Rectangle({x1: 0, y1: 0, x2: 8, y2: 8, strokeStyle: 'red'});
             const hoverPolygon = new Polygon({points: [[{x: 5, y: 5}, {x: 15, y: 5}, {x: 15, y: 15}, {x: 5, y: 15}], [{x: 7, y: 7}, {x: 7, y: 13}, {x: 13, y: 7}]], fillStyle: 'green'});
 
-            for (let i = 0; i < 1e6; i++) {
+            for (let i = 0; i < 1e2; i++) {
                 // const image = new IdentifiedImage({width: 20, height: 20, image: triangleImage});
                 // const circle = new IdentifiedCircle({radius: 8, fillStyle: getRandomColor()});
                 const circle = new IdentifiedCircle({x: Math.random() * 800, y: Math.random() * 800, radius: 8, fillStyle: getRandomColor()});
@@ -104,11 +105,13 @@ class App extends React.Component<{}, {}> {
             }
 
             scaledHoverLayer.add(hoverLayer);
-            stage.add(cachedLayer);
-            stage.add(scaledHoverLayer);
+            const root = new Layer();
+            root.add(cachedLayer);
+            root.add(scaledHoverLayer);
+            stage.node = root;
             stage.renderAsynchronous();
 
-            stage.on('mousemove', getNode => {
+            stage.on('click', getNode => {
                 hoverLayer.removeAll();
                 const node = getNode();
                 if (node) {
@@ -147,7 +150,7 @@ class App extends React.Component<{}, {}> {
                             break;
                     }
                 }
-                stage.renderAsynchronous();
+                stage.renderAsynchronous(0);
             });
         }
 
@@ -169,7 +172,4 @@ class App extends React.Component<{}, {}> {
 const container = document.createElement('div');
 document.body.appendChild(container);
 
-ReactDOM.render(
-    <App/>,
-    container
-);
+ReactDOM.render(<App/>, container);
