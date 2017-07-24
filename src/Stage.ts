@@ -1,7 +1,6 @@
 import {EventEmitter} from 'eventemitter3';
 import Node from './Node';
-import NodeIndexable from './NodeIndexable';
-import Layer from './Layer';
+import * as Performance from './Performance';
 
 export default class Stage extends EventEmitter {
     private canvas: HTMLCanvasElement;
@@ -85,11 +84,9 @@ export default class Stage extends EventEmitter {
             }
 
             const deadline = performance.now() + maxBatchTime;
-            // while (!done && performance.now() < deadline) {
-            if (!done) {
+            while (!done && performance.now() < deadline) {
                 done = next();
             }
-            //}
 
             that.context.clearRect(0, 0, that.canvas.width, that.canvas.height);
             next(that.context);

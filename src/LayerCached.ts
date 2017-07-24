@@ -19,6 +19,8 @@ export default class LayerCached extends Layer {
 
     private treeManager: TreeManager;
 
+    private generator: (context?: CanvasRenderingContext2D) => boolean;
+
     constructor({clipRegion}: {clipRegion?: Bounds} = {}) {
         super();
         this.clipRegion = clipRegion;
@@ -32,6 +34,7 @@ export default class LayerCached extends Layer {
 
     invalidateBuffer(): void {
         this.cache = undefined;
+        this.generator = undefined;
     }
 
     invalidateIndex(): void {
@@ -75,49 +78,49 @@ export default class LayerCached extends Layer {
     }
 
     steps(): (context?: CanvasRenderingContext2D) => boolean {
-        const {minX, minY, maxX, maxY} = this.getBounds();
-        const width = maxX - minX;
-        const height = maxY - minY;
-        console.log(minX, minY, maxX, maxY)
-
-        if (this.cache) {
-            return (context) => {
-                if (context) {
-                    context.drawImage(this.cache, minX, minY, width, height);
-                }
-                return true;
-            };
-        } else {
-            this.cache = document.createElement('canvas');
-            this.cache.width = width;
-            this.cache.height = height;
-            const cacheContext = this.cache.getContext('2d');
+        if (!this.generator) {
+            const {minX, minY, maxX, maxY} = this.getBounds();
+            const width = maxX - minX;
+            const height = maxY - minY;
+            const cache = document.createElement('canvas');
+            cache.width = width;
+            cache.height = height;
+            const cacheContext = cache.getContext('2d');
 
             let next: (context?: CanvasRenderingContext2D) => boolean;
             let index: number = 0;
-            return (context) => {
-                if (context) {
-                    context.drawImage(this.cache, minX, minY, width, height);
+            this.generator = (context) => {
+                if (this.cache) {
+                    if (context) {
+                        context.drawImage(cache, minX, minY, width, height);
+                    }
+                    return true;
                 } else {
-                    if (!next) {
-                        if (index === 0) {
-                            cacheContext.translate(-minX, -minY);
+                    if (context) {
+                        context.drawImage(cache, minX, minY, width, height);
+                    } else {
+                        if (!next) {
+                            if (index === 0) {
+                                cacheContext.translate(-minX, -minY);
+                            }
+                            if (index < this.children.length) {
+                                next = this.children[index++].steps();
+                            }
                         }
-                        if (index < this.children.length) {
-                            next = this.children[index++].steps();
+                        if (next && next()) {
+                            next(cacheContext);
+                            next = null;
+                            if (index === this.children.length) {
+                                cacheContext.translate(minX, minY);
+                                this.cache = cache;
+                            }
                         }
                     }
-                    if (next && next()) {
-                        next(cacheContext);
-                        next = null;
-                        if (index === this.children.length) {
-                            cacheContext.translate(minX, minY);
-                        }
-                    }
+                    return !next && index >= this.children.length;
                 }
-                return !next && index >= this.children.length;
             };
         }
+        return this.generator;
     }
 
     index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number): number {
