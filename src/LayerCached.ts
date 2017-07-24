@@ -1,23 +1,15 @@
-import Node, {Bounds, Point} from './Node';
+import {Bounds} from './Node';
 import Transformer from './Transformer';
-import TreeManager from './TreeManager';
-import NodeIndexable from './NodeIndexable';
 import Layer from './Layer';
-
-const emptyTransformers: Array<Transformer> = [];
 
 export default class LayerCached extends Layer {
     private caching: boolean = false;
-
-    private indexing: boolean = false;
 
     private cache: HTMLCanvasElement;
 
     private clipRegion?: Bounds;
 
     private cachedBounds?: Bounds;
-
-    private treeManager: TreeManager;
 
     private generator: (context?: CanvasRenderingContext2D) => boolean;
 
@@ -28,17 +20,12 @@ export default class LayerCached extends Layer {
 
     invalidateAll(): void {
         this.invalidateBuffer();
-        this.invalidateIndex();
         this.invalidateBounds();
     }
 
     invalidateBuffer(): void {
         this.cache = undefined;
         this.generator = undefined;
-    }
-
-    invalidateIndex(): void {
-        this.treeManager = undefined;
     }
 
     invalidateBounds(): void {
@@ -121,31 +108,6 @@ export default class LayerCached extends Layer {
             };
         }
         return this.generator;
-    }
-
-    index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number): number {
-        if (this.indexing) {
-            for (const child of this.children) {
-                if (child.isHitEnabled()) {
-                    zIndex = child.index(action, zIndex) + 1;
-                }
-            }
-            return zIndex;
-        } else {
-            action(this, zIndex, emptyTransformers);
-            return zIndex;
-        }
-    }
-
-    intersection(point: Point): Node {
-        if (!this.treeManager) {
-            this.indexing = true;
-            this.treeManager = new TreeManager(this);
-            this.treeManager.reindex();
-            this.indexing = false;
-        }
-
-        return this.treeManager.intersection(point);
     }
 
     setClipRegion(clipRegion: Bounds): void {

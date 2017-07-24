@@ -1,5 +1,6 @@
 import Node, {Point} from './Node';
 import Layer from './Layer';
+import NodeIndexable from './NodeIndexable';
 
 abstract class Transformer extends Layer {
     abstract transform(point: Point): Point;
@@ -12,6 +13,10 @@ abstract class Transformer extends Layer {
 
     constructor() {
         super();
+    }
+
+    add(node: NodeIndexable, transformer?: Transformer): number {
+        return super.add(node, this);
     }
 
     draw(context: CanvasRenderingContext2D): void {
@@ -32,12 +37,6 @@ abstract class Transformer extends Layer {
                 return next();
             }
         };
-    }
-
-    index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number): number {
-        return super.index((node: Node, zIndex: number, transformers: Array<Transformer>) => {
-            action(node, zIndex, [...transformers, this]);
-        }, zIndex);
     }
 }
 

@@ -3,9 +3,12 @@ import NodeIndexable from './NodeIndexable';
 import NodeCollection from './NodeCollection';
 import NodeBasic from './NodeBasic';
 import Transformer from './Transformer';
+import TreeManager from './TreeManager';
 
 class Layer extends NodeBasic implements NodeCollection {
     private hitEnabled: boolean = true;
+
+    private treeManager: TreeManager = new TreeManager();
 
     protected children: Array<NodeIndexable> = [];
 
@@ -55,13 +58,19 @@ class Layer extends NodeBasic implements NodeCollection {
         return {minX, minY, maxX, maxY};
     }
 
-    add(node: NodeIndexable): number {
+    add(node: NodeIndexable, transformer?: Transformer): number {
         this.children.push(node);
+        if (this.isHitEnabled()) {
+            this.treeManager.index(node, this.children.length - 1, transformer);
+        }
         return this.children.length - 1;
     }
 
     remove(a: number | NodeIndexable): void {
         if (typeof a === 'number') {
+            if (this.isHitEnabled()) {
+                this.treeManager.remove(this.children[a]);
+            }
             this.children.splice(a, 1);
         } else {
             this.remove(this.children.indexOf(a));
@@ -70,6 +79,9 @@ class Layer extends NodeBasic implements NodeCollection {
 
     removeAll(): void {
         this.children = [];
+        if (this.isHitEnabled()) {
+            this.treeManager.clear();
+        }
     }
 
     count(): number {
@@ -77,24 +89,9 @@ class Layer extends NodeBasic implements NodeCollection {
     }
 
     intersection(point: Point): Node {
-        // Visit children in reverse order: the ones drawn last must be checked first
-        for (const child of this.children.slice().reverse()) {
-            if (child.isHitEnabled()) {
-                const intersection = child.intersection(point);
-                if (!!intersection) {
-                    return intersection;
-                }
-            }
+        if (this.isHitEnabled()) {
+            return this.treeManager.intersection(point);
         }
-    }
-
-    index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number): number {
-        for (const child of this.children) {
-            if (child.isHitEnabled()) {
-                zIndex = child.index(action, zIndex) + 1;
-            }
-        }
-        return zIndex;
     }
 
     isHitEnabled(): boolean {

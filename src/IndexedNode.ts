@@ -3,7 +3,7 @@ import Transformer from './Transformer';
 import Node from './Node';
 
 interface IndexedNode extends rbush.BBox {
-    transformers: Array<Transformer>;
+    transformer?: Transformer;
     node: Node;
     zIndex: number;
 }

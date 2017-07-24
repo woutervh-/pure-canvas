@@ -1,6 +1,5 @@
 import {EventEmitter} from 'eventemitter3';
 import Node from './Node';
-import * as Performance from './Performance';
 
 export default class Stage extends EventEmitter {
     private canvas: HTMLCanvasElement;

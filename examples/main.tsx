@@ -19,40 +19,6 @@ function getRandomColor() {
     return colors[Math.floor(Math.random() * colors.length)];
 }
 
-class IdentifiedImage extends CanvasImage {
-    id: number;
-    type: string = 'image';
-}
-
-class IdentifiedCircle extends Circle {
-    id: number;
-    type: string = 'circle';
-
-    constructor(options: CircleParameters) {
-        super(options);
-    }
-}
-
-class IdentifiedLine extends Line {
-    id: number;
-    type: string = 'line';
-}
-
-class IdentifiedLineString extends LineString {
-    id: number;
-    type: string = 'line-string';
-}
-
-class IdentifiedRectangle extends Rectangle {
-    id: number;
-    type: string = 'rectangle';
-}
-
-class IdentifiedPolygon extends Polygon {
-    id: number;
-    type: string = 'polygon';
-}
-
 class App extends React.Component<{}, {}> {
     renderToCanvas(canvas: HTMLCanvasElement) {
         const triangleImage = new Image();
@@ -73,7 +39,7 @@ class App extends React.Component<{}, {}> {
             for (let i = 0; i < 1e6; i++) {
                 // const image = new IdentifiedImage({width: 20, height: 20, image: triangleImage});
                 // const circle = new IdentifiedCircle({radius: 8, fillStyle: getRandomColor()});
-                const circle = new IdentifiedCircle({x: Math.random() * 800, y: Math.random() * 800, radius: 8, fillStyle: getRandomColor()});
+                const circle = new Circle({x: Math.random() * 800, y: Math.random() * 800, radius: 8, fillStyle: getRandomColor()});
                 // const line = new IdentifiedLine({x1: 0, y1: 0, x2: 15, y2: 15, lineWidth: 3});
                 // const lineString = new IdentifiedLineString({points: [{x: 0, y: 10}, {x: 10, y: 0}, {x: 20, y: 10}], lineWidth: 3, strokeStyle: 'purple'});
                 // const rectangle = new IdentifiedRectangle({x1: 0, y1: 0, x2: 8, y2: 8});
@@ -84,12 +50,6 @@ class App extends React.Component<{}, {}> {
                 // lineString.setHitEnabled(true);
                 // rectangle.setHitEnabled(true);
                 // polygon.setHitEnabled(true);
-                // image.id = i;
-                circle.id = i;
-                // line.id = i;
-                // lineString.id = i;
-                // rectangle.id = i;
-                // polygon.id = i;
                 // const layer = new Transform();
                 // layer.rotate(Math.PI / 8);
                 // layer.translate((i % 20) * 20, Math.floor(i / 20) * 20);
@@ -115,40 +75,46 @@ class App extends React.Component<{}, {}> {
                 hoverLayer.removeAll();
                 const node = getNode();
                 if (node) {
-                    switch (node.type) {
-                        case 'image':
-                            hoverLayer.x = (node.id % 20) * 20 - 2;
-                            hoverLayer.y = Math.floor(node.id / 20) * 20 - 2;
-                            hoverLayer.add(hoverImage);
-                            break;
-                        case 'circle':
-                            hoverLayer.x = node.x / 2;
-                            hoverLayer.y = node.y / 2;
-                            hoverLayer.add(hoverCircle);
-                            break;
-                        case 'line':
-                            hoverLayer.x = (node.id % 20) * 20;
-                            hoverLayer.y = Math.floor(node.id / 20) * 20;
-                            hoverLayer.add(hoverLine);
-                            break;
-                        case 'line-string':
-                            hoverLayer.x = (node.id % 20) * 20;
-                            hoverLayer.y = Math.floor(node.id / 20) * 20;
-                            hoverLayer.add(hoverLineString);
-                            break;
-                        case 'rectangle':
-                            hoverLayer.x = (node.id % 20) * 20;
-                            hoverLayer.y = Math.floor(node.id / 20) * 20;
-                            hoverLayer.add(hoverRectangle);
-                            break;
-                        case 'polygon':
-                            hoverLayer.x = (node.id % 20) * 20;
-                            hoverLayer.y = Math.floor(node.id / 20) * 20;
-                            hoverLayer.add(hoverPolygon);
-                            break;
-                        default:
-                            break;
+                    if (node instanceof Circle) {
+                        hoverLayer.x = node.x / 2;
+                        hoverLayer.y = node.y / 2;
+                        hoverLayer.add(hoverCircle);
                     }
+
+                    // switch (node.type) {
+                    //     case 'image':
+                    //         hoverLayer.x = (node.id % 20) * 20 - 2;
+                    //         hoverLayer.y = Math.floor(node.id / 20) * 20 - 2;
+                    //         hoverLayer.add(hoverImage);
+                    //         break;
+                    //     case 'circle':
+                    //         hoverLayer.x = node.x / 2;
+                    //         hoverLayer.y = node.y / 2;
+                    //         hoverLayer.add(hoverCircle);
+                    //         break;
+                    //     case 'line':
+                    //         hoverLayer.x = (node.id % 20) * 20;
+                    //         hoverLayer.y = Math.floor(node.id / 20) * 20;
+                    //         hoverLayer.add(hoverLine);
+                    //         break;
+                    //     case 'line-string':
+                    //         hoverLayer.x = (node.id % 20) * 20;
+                    //         hoverLayer.y = Math.floor(node.id / 20) * 20;
+                    //         hoverLayer.add(hoverLineString);
+                    //         break;
+                    //     case 'rectangle':
+                    //         hoverLayer.x = (node.id % 20) * 20;
+                    //         hoverLayer.y = Math.floor(node.id / 20) * 20;
+                    //         hoverLayer.add(hoverRectangle);
+                    //         break;
+                    //     case 'polygon':
+                    //         hoverLayer.x = (node.id % 20) * 20;
+                    //         hoverLayer.y = Math.floor(node.id / 20) * 20;
+                    //         hoverLayer.add(hoverPolygon);
+                    //         break;
+                    //     default:
+                    //         break;
+                    // }
                 }
                 stage.renderAsynchronous();
             });

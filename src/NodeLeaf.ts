@@ -28,11 +28,6 @@ abstract class NodeLeaf extends NodeBasic {
         return this.generator;
     }
 
-    index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number): number {
-        action(this, zIndex, emptyTransformers);
-        return zIndex;
-    }
-
     isHitEnabled(): boolean {
         return this.hitEnabled;
     }

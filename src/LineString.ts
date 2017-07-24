@@ -15,18 +15,16 @@ class LineString extends NodeFixedBounds {
     private lineCap: string;
 
     constructor({points, strokeStyle = 'rgba(0, 0, 0, 1)', lineWidth = 1, lineCap = 'butt'}: LineStringParameters) {
-        // TODO: lineWidth to increase bounds
-
         let minX = Number.POSITIVE_INFINITY;
         let minY = Number.POSITIVE_INFINITY;
         let maxX = Number.NEGATIVE_INFINITY;
         let maxY = Number.NEGATIVE_INFINITY;
 
         for (let i = 0; i < points.length; i++) {
-            minX = Math.min(minX, points[i].x);
-            minY = Math.min(minY, points[i].y);
-            maxX = Math.max(maxX, points[i].x);
-            maxY = Math.max(maxY, points[i].y);
+            minX = Math.min(minX, points[i].x - lineWidth / 2);
+            minY = Math.min(minY, points[i].y - lineWidth / 2);
+            maxX = Math.max(maxX, points[i].x + lineWidth / 2);
+            maxY = Math.max(maxY, points[i].y + lineWidth / 2);
         }
         const bounds: Bounds = {minX, minY, maxX, maxY};
 

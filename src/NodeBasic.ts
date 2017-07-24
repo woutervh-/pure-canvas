@@ -2,7 +2,15 @@ import Node, {Bounds, Point} from './Node';
 import NodeIndexable from './NodeIndexable';
 import Transformer from './Transformer';
 
+let counter = 0;
+
 abstract class NodeBasic implements NodeIndexable {
+    private _id = counter++;
+
+    get id() {
+        return this._id;
+    }
+
     abstract getBounds(): Bounds;
 
     abstract draw(context: CanvasRenderingContext2D): void;
@@ -22,8 +30,6 @@ abstract class NodeBasic implements NodeIndexable {
         context.translate(minX, minY);
         return canvas;
     }
-
-    abstract index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number): number;
 
     abstract isHitEnabled(): boolean;
 
