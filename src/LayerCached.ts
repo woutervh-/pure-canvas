@@ -113,7 +113,12 @@ export default class LayerCached extends Layer {
                         if (next && next()) {
                             next(cacheContext);
                             next = null;
-                            zIndex = this.children[index - 1].index(action, zIndex, []) + 1;
+
+                            const child = this.children[index - 1];
+                            if (child.isHitEnabled()) {
+                                zIndex = child.index(action, zIndex, []) + 1;
+                            }
+
                             if (index === this.children.length) {
                                 cacheContext.translate(minX, minY);
                                 this.cache = cache;
@@ -140,7 +145,9 @@ export default class LayerCached extends Layer {
             };
             let zIndex = 0;
             for (const child of this.children) {
-                zIndex = child.index(action, zIndex, []) + 1;
+                if (child.isHitEnabled()) {
+                    zIndex = child.index(action, zIndex, []) + 1;
+                }
             }
         }
 
