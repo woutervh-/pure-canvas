@@ -65,6 +65,25 @@ class Layer extends NodeBasic implements NodeCollection {
         return this.children.length - 1;
     }
 
+    addAll(nodes: Iterator<Node>, transformer?: Transformer): Promise<void> {
+        const that = this;
+        return new Promise((resolve) => {
+            (function batch() {
+                const deadline = performance.now() + 10;
+                let done = false;
+                let node;
+                while (({done, value: node} = nodes.next(), !done) && performance.now() < deadline) {
+                    that.add(node);
+                }
+                if (!done) {
+                    window.setTimeout(batch, 0);
+                } else {
+                    resolve();
+                }
+            })();
+        });
+    }
+
     remove(a: number | Node): void {
         if (typeof a === 'number') {
             if (this.isHitEnabled()) {

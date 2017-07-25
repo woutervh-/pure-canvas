@@ -35,41 +35,23 @@ class App extends React.Component<{}, {}> {
             const hoverLineString = new LineString({points: [{x: 0, y: 10}, {x: 10, y: 0}, {x: 20, y: 10}], lineWidth: 3});
             const hoverRectangle = new Rectangle({x1: 0, y1: 0, x2: 8, y2: 8, strokeStyle: 'red'});
             const hoverPolygon = new Polygon({points: [[{x: 5, y: 5}, {x: 15, y: 5}, {x: 15, y: 15}, {x: 5, y: 15}], [{x: 7, y: 7}, {x: 7, y: 13}, {x: 13, y: 7}]], fillStyle: 'green'});
-
-            for (let i = 0; i < 1e6; i++) {
-                // const image = new IdentifiedImage({width: 20, height: 20, image: triangleImage});
-                // const circle = new IdentifiedCircle({radius: 8, fillStyle: getRandomColor()});
-                const circle = new Circle({x: Math.random() * 800, y: Math.random() * 800, radius: 8, fillStyle: getRandomColor()});
-                // const line = new IdentifiedLine({x1: 0, y1: 0, x2: 15, y2: 15, lineWidth: 3});
-                // const lineString = new IdentifiedLineString({points: [{x: 0, y: 10}, {x: 10, y: 0}, {x: 20, y: 10}], lineWidth: 3, strokeStyle: 'purple'});
-                // const rectangle = new IdentifiedRectangle({x1: 0, y1: 0, x2: 8, y2: 8});
-                // const polygon = new IdentifiedPolygon({points: [[{x: 5, y: 5}, {x: 15, y: 5}, {x: 15, y: 15}, {x: 5, y: 15}], [{x: 7, y: 7}, {x: 7, y: 13}, {x: 13, y: 7}]]});
-                // image.setHitEnabled(true);
-                circle.setHitEnabled(true);
-                // line.setHitEnabled(true);
-                // lineString.setHitEnabled(true);
-                // rectangle.setHitEnabled(true);
-                // polygon.setHitEnabled(true);
-                // const layer = new Transform();
-                // layer.rotate(Math.PI / 8);
-                // layer.translate((i % 20) * 20, Math.floor(i / 20) * 20);
-                // layer.translate(Math.random() * 800, Math.random() * 800);
-                // layer.scale(2, 2);
-                // layer.add(image);
-                // layer.add(circle);
-                // layer.add(line);
-                // layer.add(lineString);
-                // layer.add(rectangle);
-                // layer.add(polygon);
-                cachedLayer.add(circle);
+            
+            function* circleGenerator() {
+                for (let i = 0; i < 1e6; i++) {
+                    const circle = new Circle({x: Math.random() * 800, y: Math.random() * 800, radius: 8, fillStyle: getRandomColor()});
+                    circle.setHitEnabled(true);
+                    yield circle;
+                }
             }
-
-            scaledHoverLayer.add(hoverLayer);
-            const root = new Layer();
-            root.add(cachedLayer);
-            root.add(scaledHoverLayer);
-            stage.node = root;
-            stage.renderAsynchronous();
+            
+            cachedLayer.addAll(circleGenerator()).then(() => {
+                scaledHoverLayer.add(hoverLayer);
+                const root = new Layer();
+                root.add(cachedLayer);
+                root.add(scaledHoverLayer);
+                stage.node = root;
+                stage.renderAsynchronous();
+            });
 
             stage.on('click', getNode => {
                 hoverLayer.removeAll();

@@ -1,6 +1,5 @@
 import Node, {Point} from './Node';
 import Layer from './Layer';
-import NodeIndexable from './NodeIndexable';
 
 abstract class Transformer extends Layer {
     abstract transform(point: Point): Point;
@@ -15,8 +14,12 @@ abstract class Transformer extends Layer {
         super();
     }
 
-    add(node: NodeIndexable, transformer?: Transformer): number {
+    add(node: Node, transformer?: Transformer): number {
         return super.add(node, this);
+    }
+
+    addAll(nodes: Iterator<Node>, transformer?: Transformer): Promise<void> {
+        return super.addAll(nodes, this);
     }
 
     draw(context: CanvasRenderingContext2D): void {
