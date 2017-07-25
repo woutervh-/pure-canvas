@@ -10,7 +10,7 @@ export default class LayerCached extends Layer {
     private cache: HTMLCanvasElement;
 
     private generator: (context?: CanvasRenderingContext2D) => boolean;
-    
+
     private treeManager: TreeManager;
 
     private indexFinished: boolean = false;
@@ -24,37 +24,18 @@ export default class LayerCached extends Layer {
         this.clipRegion = clipRegion;
     }
 
-    invalidateAll(): void {
-        this.invalidateBuffer();
-        this.invalidateBounds();
-        this.invalidateIndex();
-    }
-
-    invalidateBuffer(): void {
-        this.cache = undefined;
-        this.generator = undefined;
-    }
-
-    invalidateIndex(): void {
-        this.treeManager = undefined;
-        this.indexFinished = false;
-    }
-
-    invalidateBounds(): void {
-        this.cachedBounds = undefined;
-    }
-
     getBounds(): Bounds {
         if (!this.cachedBounds) {
             if (this.clipRegion) {
-                const {minX: clipMinX, minY: clipMinY, maxX: clipMaxX, maxY: clipMaxY} = this.clipRegion;
-                const {minX, minY, maxX, maxY} = super.getBounds();
-                this.cachedBounds = {
-                    minX: Math.max(minX, clipMinX),
-                    minY: Math.max(minY, clipMinY),
-                    maxX: Math.min(maxX, clipMaxX),
-                    maxY: Math.min(maxY, clipMaxY)
-                };
+                // const {minX: clipMinX, minY: clipMinY, maxX: clipMaxX, maxY: clipMaxY} = this.clipRegion;
+                // const {minX, minY, maxX, maxY} = super.getBounds();
+                // this.cachedBounds = {
+                //     minX: Math.max(minX, clipMinX),
+                //     minY: Math.max(minY, clipMinY),
+                //     maxX: Math.min(maxX, clipMaxX),
+                //     maxY: Math.min(maxY, clipMaxY)
+                // };
+                this.cachedBounds = this.clipRegion;
             } else {
                 this.cachedBounds = super.getBounds();
             }
@@ -91,10 +72,13 @@ export default class LayerCached extends Layer {
             const action = (node: Node, zIndex: number, transformers: Array<Transformer>) => {
                 this.treeManager.index(node, zIndex, transformers);
             };
-            let zIndex = 0;
 
+            const children = this.children[Symbol.iterator]();
+            let zIndex = 0;
+            let nextChild: IteratorResult<NodeIndexable>;
             let next: (context?: CanvasRenderingContext2D) => boolean;
-            let index: number = 0;
+            let first: boolean = true;
+            let last: boolean = false;
             this.generator = (context) => {
                 if (this.cache) {
                     if (context) {
@@ -106,32 +90,31 @@ export default class LayerCached extends Layer {
                         context.drawImage(cache, minX, minY, width, height);
                     } else {
                         if (!next) {
-                            if (index === 0) {
+                            if (first) {
                                 cacheContext.translate(-minX, -minY);
+                                first = false;
                             }
-                            if (index < this.children.length) {
-                                next = this.children[index++].steps();
-                            }
-                        }
-                        if (next && next()) {
-                            next(cacheContext);
-                            next = null;
-
-                            if (!this.indexFinished) {
-                                const child = this.children[index - 1];
-                                if (child.isHitEnabled()) {
-                                    zIndex = child.index(action, zIndex, []) + 1;
-                                }
-                            }
-
-                            if (index === this.children.length) {
+                            nextChild = children.next();
+                            if (!nextChild.done) {
+                                next = nextChild.value.steps();
+                            } else {
                                 cacheContext.translate(minX, minY);
                                 this.cache = cache;
                                 this.indexFinished = true;
                             }
                         }
+                        if (next && next()) {
+                            next(cacheContext);
+                            if (!this.indexFinished) {
+                                if (nextChild.value.isHitEnabled()) {
+                                    zIndex = nextChild.value.index(action, zIndex, []) + 1;
+                                }
+                            }
+                            next = null;
+                            nextChild = null;
+                        }
                     }
-                    return !next && index >= this.children.length;
+                    return !next && last;
                 }
             };
         }
@@ -144,7 +127,7 @@ export default class LayerCached extends Layer {
     }
 
     intersection(point: Point): Node {
-        if (!this.indexFinished) {
+        if (!this.treeManager) {
             this.treeManager = new TreeManager();
             const action = (node: Node, zIndex: number, transformers: Array<Transformer>) => {
                 this.treeManager.index(node, zIndex, transformers);
@@ -159,26 +142,5 @@ export default class LayerCached extends Layer {
         }
 
         return this.treeManager.intersection(point);
-    }
-
-    add(node: NodeIndexable): number {
-        this.invalidateAll();
-        return super.add(node);
-    }
-
-    remove(a: number | NodeIndexable): void {
-        this.invalidateAll();
-        super.remove(a);
-    }
-
-    removeAll(): void {
-        this.invalidateAll();
-        super.removeAll();
-    }
-
-    setClipRegion(clipRegion: Bounds): void {
-        this.invalidateBounds();
-        this.invalidateBuffer();
-        this.clipRegion = clipRegion;
     }
 };

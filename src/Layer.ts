@@ -1,16 +1,20 @@
 import Node, {Point, Bounds} from './Node';
-import NodeCollection from './NodeCollection';
 import NodeIndexable from './NodeIndexable';
 import NodeBase from './NodeBase';
 import Transformer from './Transformer';
 
-class Layer extends NodeBase implements NodeCollection {
+class Layer extends NodeBase {
     private hitEnabled: boolean = true;
 
-    protected children: Array<NodeIndexable> = [];
+    protected children: Iterable<NodeIndexable>;
 
-    constructor() {
+    constructor(children: Iterable<NodeIndexable> = []) {
         super();
+        this.children = children;
+    }
+
+    setChildren(children: Iterable<NodeIndexable>) {
+        this.children = children;
     }
 
     draw(context: CanvasRenderingContext2D): void {
@@ -20,7 +24,7 @@ class Layer extends NodeBase implements NodeCollection {
     }
 
     steps(): (context?: CanvasRenderingContext2D) => boolean {
-        const generators = this.children.map((child) => child.steps());
+        const generators = Array.from(this.children).map((child) => child.steps());
         let index = 0;
         return (context) => {
             if (context) {
@@ -28,13 +32,13 @@ class Layer extends NodeBase implements NodeCollection {
                     generator(context);
                 }
             } else {
-                if (index < this.children.length) {
+                if (index < generators.length) {
                     if (generators[index]()) {
                         index += 1;
                     }
                 }
             }
-            return index >= this.children.length;
+            return index >= generators.length;
         };
     }
 
@@ -55,30 +59,9 @@ class Layer extends NodeBase implements NodeCollection {
         return {minX, minY, maxX, maxY};
     }
 
-    add(node: NodeIndexable): number {
-        this.children.push(node);
-        return this.children.length - 1;
-    }
-
-    remove(a: number | NodeIndexable): void {
-        if (typeof a === 'number') {
-            this.children.splice(a, 1);
-        } else {
-            this.remove(this.children.indexOf(a));
-        }
-    }
-
-    removeAll(): void {
-        this.children = [];
-    }
-
-    count(): number {
-        return this.children.length;
-    }
-
     intersection(point: Point): Node {
         // Visit children in reverse order: the ones drawn last must be checked first
-        for (const child of this.children.slice().reverse()) {
+        for (const child of Array.from(this.children).reverse()) {
             if (child.isHitEnabled()) {
                 const intersection = child.intersection(point);
                 if (!!intersection) {
