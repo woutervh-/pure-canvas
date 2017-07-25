@@ -16,7 +16,7 @@ interface Node {
     getBounds(): Bounds;
 
     draw(context: CanvasRenderingContext2D): void;
-
+    
     steps(): (context?: CanvasRenderingContext2D) => boolean;
 
     intersection(point: Point): Node;

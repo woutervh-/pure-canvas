@@ -1,16 +1,21 @@
-import {Bounds} from './Node';
+import Node, {Point, Bounds} from './Node';
 import Layer from './Layer';
+import TreeManager from './TreeManager';
+import Transformer from './Transformer';
+import NodeIndexable from './NodeIndexable';
 
 export default class LayerCached extends Layer {
     private caching: boolean = false;
 
     private cache: HTMLCanvasElement;
 
+    private generator: (context?: CanvasRenderingContext2D) => boolean;
+    
+    private treeManager: TreeManager;
+
     private clipRegion?: Bounds;
 
     private cachedBounds?: Bounds;
-
-    private generator: (context?: CanvasRenderingContext2D) => boolean;
 
     constructor({clipRegion}: {clipRegion?: Bounds} = {}) {
         super();
@@ -20,11 +25,16 @@ export default class LayerCached extends Layer {
     invalidateAll(): void {
         this.invalidateBuffer();
         this.invalidateBounds();
+        this.invalidateIndex();
     }
 
     invalidateBuffer(): void {
         this.cache = undefined;
         this.generator = undefined;
+    }
+
+    invalidateIndex(): void {
+        this.treeManager = undefined;
     }
 
     invalidateBounds(): void {
@@ -72,6 +82,13 @@ export default class LayerCached extends Layer {
             cache.width = width;
             cache.height = height;
             const cacheContext = cache.getContext('2d');
+            if (!this.treeManager) {
+                this.treeManager = new TreeManager();
+            }
+            const action = (node: Node, zIndex: number, transformers: Array<Transformer>) => {
+                this.treeManager.index(node, zIndex, transformers);
+            };
+            let zIndex = 0;
 
             let next: (context?: CanvasRenderingContext2D) => boolean;
             let index: number = 0;
@@ -96,6 +113,7 @@ export default class LayerCached extends Layer {
                         if (next && next()) {
                             next(cacheContext);
                             next = null;
+                            zIndex = this.children[index - 1].index(action, zIndex, []) + 1;
                             if (index === this.children.length) {
                                 cacheContext.translate(minX, minY);
                                 this.cache = cache;
@@ -107,6 +125,41 @@ export default class LayerCached extends Layer {
             };
         }
         return this.generator;
+    }
+
+    index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number, transformers: Array<Transformer>): number {
+        action(this, zIndex, transformers);
+        return zIndex;
+    }
+
+    intersection(point: Point): Node {
+        if (!this.treeManager) {
+            this.treeManager = new TreeManager();
+            const action = (node: Node, zIndex: number, transformers: Array<Transformer>) => {
+                this.treeManager.index(node, zIndex, transformers);
+            };
+            let zIndex = 0;
+            for (const child of this.children) {
+                zIndex = child.index(action, zIndex, []) + 1;
+            }
+        }
+
+        return this.treeManager.intersection(point);
+    }
+
+    add(node: NodeIndexable): number {
+        this.invalidateAll();
+        return super.add(node);
+    }
+
+    remove(a: number | NodeIndexable): void {
+        this.invalidateAll();
+        super.remove(a);
+    }
+
+    removeAll(): void {
+        this.invalidateAll();
+        super.removeAll();
     }
 
     setClipRegion(clipRegion: Bounds): void {

@@ -1,4 +1,5 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CircularDependencyPlugin = require('circular-dependency-plugin');
 
 module.exports = {
     entry: './examples/main.tsx',
@@ -29,6 +30,10 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             title: 'Pure Canvas Examples'
+        }),
+        new CircularDependencyPlugin({
+            exclude: /node_modules/,
+            failOnError: true
         })
     ]
 };

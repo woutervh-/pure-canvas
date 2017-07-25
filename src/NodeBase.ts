@@ -1,8 +1,10 @@
 import Node, {Bounds, Point} from './Node';
+import NodeIndexable from './NodeIndexable';
+import Transformer from './Transformer';
 
 let counter = 0;
 
-abstract class NodeBasic implements Node {
+abstract class NodeBase implements NodeIndexable {
     private _id = counter++;
 
     get id() {
@@ -29,9 +31,11 @@ abstract class NodeBasic implements Node {
         return canvas;
     }
 
+    abstract index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number, transformers: Array<Transformer>): number;
+
     abstract isHitEnabled(): boolean;
 
     abstract setHitEnabled(value: boolean): void;
 }
 
-export default NodeBasic;
+export default NodeBase;

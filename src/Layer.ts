@@ -1,15 +1,13 @@
 import Node, {Point, Bounds} from './Node';
 import NodeCollection from './NodeCollection';
-import NodeBasic from './NodeBasic';
+import NodeIndexable from './NodeIndexable';
+import NodeBase from './NodeBase';
 import Transformer from './Transformer';
-import TreeManager from './TreeManager';
 
-class Layer extends NodeBasic implements NodeCollection {
+class Layer extends NodeBase implements NodeCollection {
     private hitEnabled: boolean = true;
 
-    private treeManager: TreeManager = new TreeManager();
-
-    protected children: Array<Node> = [];
+    protected children: Array<NodeIndexable> = [];
 
     constructor() {
         super();
@@ -57,38 +55,13 @@ class Layer extends NodeBasic implements NodeCollection {
         return {minX, minY, maxX, maxY};
     }
 
-    add(node: Node, transformer?: Transformer): number {
+    add(node: NodeIndexable): number {
         this.children.push(node);
-        if (this.isHitEnabled()) {
-            this.treeManager.index(node, this.children.length - 1, transformer);
-        }
         return this.children.length - 1;
     }
 
-    addAll(nodes: Iterator<Node>, transformer?: Transformer): Promise<void> {
-        const that = this;
-        return new Promise((resolve) => {
-            (function batch() {
-                const deadline = performance.now() + 10;
-                let done = false;
-                let node;
-                while (({done, value: node} = nodes.next(), !done) && performance.now() < deadline) {
-                    that.add(node);
-                }
-                if (!done) {
-                    window.setTimeout(batch, 0);
-                } else {
-                    resolve();
-                }
-            })();
-        });
-    }
-
-    remove(a: number | Node): void {
+    remove(a: number | NodeIndexable): void {
         if (typeof a === 'number') {
-            if (this.isHitEnabled()) {
-                this.treeManager.remove(this.children[a]);
-            }
             this.children.splice(a, 1);
         } else {
             this.remove(this.children.indexOf(a));
@@ -97,9 +70,6 @@ class Layer extends NodeBasic implements NodeCollection {
 
     removeAll(): void {
         this.children = [];
-        if (this.isHitEnabled()) {
-            this.treeManager.clear();
-        }
     }
 
     count(): number {
@@ -107,9 +77,24 @@ class Layer extends NodeBasic implements NodeCollection {
     }
 
     intersection(point: Point): Node {
-        if (this.isHitEnabled()) {
-            return this.treeManager.intersection(point);
+        // Visit children in reverse order: the ones drawn last must be checked first
+        for (const child of this.children.slice().reverse()) {
+            if (child.isHitEnabled()) {
+                const intersection = child.intersection(point);
+                if (!!intersection) {
+                    return intersection;
+                }
+            }
         }
+    }
+
+    index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number, transformers: Array<Transformer>): number {
+        for (const child of this.children) {
+            if (child.isHitEnabled()) {
+                zIndex = child.index(action, zIndex, transformers) + 1;
+            }
+        }
+        return zIndex;
     }
 
     isHitEnabled(): boolean {

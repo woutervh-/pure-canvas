@@ -1,10 +1,8 @@
 import Node, {Point, Bounds} from './Node';
-import NodeBasic from './NodeBasic';
+import NodeBase from './NodeBase';
 import Transformer from './Transformer';
 
-const emptyTransformers: Array<Transformer> = [];
-
-abstract class NodeLeaf extends NodeBasic {
+abstract class NodeLeaf extends NodeBase {
     private hitEnabled: boolean = false;
 
     abstract getBounds(): Bounds;
@@ -34,6 +32,11 @@ abstract class NodeLeaf extends NodeBasic {
 
     setHitEnabled(value: boolean): void {
         this.hitEnabled = value;
+    }
+
+    index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number, transformers: Array<Transformer>): number {
+        action(this, zIndex, transformers);
+        return zIndex;
     }
 }
 

@@ -1,12 +1,9 @@
-import Node from './Node';
-import Transformer from './Transformer';
+import NodeIndexable from './NodeIndexable';
 
 interface NodeCollection {
-    add(node: Node, transformer?: Transformer): number;
+    add(node: NodeIndexable): number;
 
-    addAll(nodes: Iterator<Node>, transformer?: Transformer): Promise<void>;
-
-    remove(a: number | Node): void;
+    remove(a: number | NodeIndexable): void;
 
     removeAll(): void;
 

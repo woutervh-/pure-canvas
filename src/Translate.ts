@@ -1,7 +1,7 @@
 import Node, {Bounds, Point} from './Node';
-import Transformer from './Transformer';
+import TransformerBase from './TransformerBase';
 
-export default class Translate extends Transformer {
+export default class Translate extends TransformerBase {
     private _x: number;
 
     private _y: number;
