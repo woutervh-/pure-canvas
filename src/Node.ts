@@ -11,6 +11,8 @@ export interface Point {
 }
 
 interface Node {
+    id: number;
+    
     getBounds(): Bounds;
 
     draw(context: CanvasRenderingContext2D): void;

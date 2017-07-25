@@ -1,10 +1,10 @@
-import NodeIndexable from './NodeIndexable';
+import Node from './Node';
 import Transformer from './Transformer';
 
 interface NodeCollection {
-    add(node: NodeIndexable, transformer?: Transformer): number;
+    add(node: Node, transformer?: Transformer): number;
 
-    remove(a: number | NodeIndexable): void;
+    remove(a: number | Node): void;
 
     removeAll(): void;
 

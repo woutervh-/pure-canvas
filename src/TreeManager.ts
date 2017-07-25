@@ -2,7 +2,6 @@ import * as rbush from 'rbush';
 import IndexedNode from './IndexedNode';
 import Transformer from './Transformer';
 import Node, {Point} from './Node';
-import NodeIndexable from './NodeIndexable';
 
 export default class TreeManager {
     private tree: rbush.RBush<IndexedNode> = rbush<IndexedNode>();
@@ -14,7 +13,7 @@ export default class TreeManager {
         this.tree.clear();
     }
 
-    index(node: NodeIndexable, zIndex: number, transformer?: Transformer) {
+    index(node: Node, zIndex: number, transformer?: Transformer) {
         if (!this.nodeMap[node.id]) {
             const bounds = node.getBounds();
             if (Number.isFinite(bounds.minX) && Number.isFinite(bounds.minY) && Number.isFinite(bounds.maxX) && Number.isFinite(bounds.maxY)) {
@@ -41,7 +40,7 @@ export default class TreeManager {
         }
     }
 
-    remove(node: NodeIndexable) {
+    remove(node: Node) {
         this.tree.remove(this.nodeMap[node.id]);
         delete this.nodeMap[node.id];
     }

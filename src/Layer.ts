@@ -1,5 +1,4 @@
 import Node, {Point, Bounds} from './Node';
-import NodeIndexable from './NodeIndexable';
 import NodeCollection from './NodeCollection';
 import NodeBasic from './NodeBasic';
 import Transformer from './Transformer';
@@ -10,7 +9,7 @@ class Layer extends NodeBasic implements NodeCollection {
 
     private treeManager: TreeManager = new TreeManager();
 
-    protected children: Array<NodeIndexable> = [];
+    protected children: Array<Node> = [];
 
     constructor() {
         super();
@@ -58,7 +57,7 @@ class Layer extends NodeBasic implements NodeCollection {
         return {minX, minY, maxX, maxY};
     }
 
-    add(node: NodeIndexable, transformer?: Transformer): number {
+    add(node: Node, transformer?: Transformer): number {
         this.children.push(node);
         if (this.isHitEnabled()) {
             this.treeManager.index(node, this.children.length - 1, transformer);
@@ -66,7 +65,7 @@ class Layer extends NodeBasic implements NodeCollection {
         return this.children.length - 1;
     }
 
-    remove(a: number | NodeIndexable): void {
+    remove(a: number | Node): void {
         if (typeof a === 'number') {
             if (this.isHitEnabled()) {
                 this.treeManager.remove(this.children[a]);

@@ -1,5 +1,4 @@
 import {Bounds} from './Node';
-import Transformer from './Transformer';
 import Layer from './Layer';
 
 export default class LayerCached extends Layer {
