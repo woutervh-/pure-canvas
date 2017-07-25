@@ -2,15 +2,7 @@ import Node, {Bounds, Point} from './Node';
 import NodeIndexable from './NodeIndexable';
 import Transformer from './Transformer';
 
-let counter = 0;
-
 abstract class NodeBase implements NodeIndexable {
-    private _id = counter++;
-
-    get id() {
-        return this._id;
-    }
-
     abstract getBounds(): Bounds;
 
     abstract draw(context: CanvasRenderingContext2D): void;
