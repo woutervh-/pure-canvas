@@ -101,6 +101,7 @@ export default class LayerCached extends Layer {
                                 cacheContext.translate(minX, minY);
                                 this.cache = cache;
                                 this.indexFinished = true;
+                                last = true;
                             }
                         }
                         if (next && next()) {

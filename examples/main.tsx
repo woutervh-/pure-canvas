@@ -37,7 +37,7 @@ class App extends React.Component<{}, {}> {
             const hoverPolygon = new Polygon({points: [[{x: 5, y: 5}, {x: 15, y: 5}, {x: 15, y: 15}, {x: 5, y: 15}], [{x: 7, y: 7}, {x: 7, y: 13}, {x: 13, y: 7}]], fillStyle: 'green'});
 
             function* circleGenerator() {
-                for (let i = 0; i < 1e6; i++) {
+                for (let i = 0; i < 1e2; i++) {
                     const circle = new Circle({x: Math.random() * 800, y: Math.random() * 800, radius: 8, fillStyle: getRandomColor()});
                     circle.setHitEnabled(true);
                     yield circle;
