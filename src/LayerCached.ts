@@ -13,6 +13,8 @@ export default class LayerCached extends Layer {
     
     private treeManager: TreeManager;
 
+    private indexFinished: boolean = false;
+
     private clipRegion?: Bounds;
 
     private cachedBounds?: Bounds;
@@ -35,6 +37,7 @@ export default class LayerCached extends Layer {
 
     invalidateIndex(): void {
         this.treeManager = undefined;
+        this.indexFinished = false;
     }
 
     invalidateBounds(): void {
@@ -82,7 +85,7 @@ export default class LayerCached extends Layer {
             cache.width = width;
             cache.height = height;
             const cacheContext = cache.getContext('2d');
-            if (!this.treeManager) {
+            if (!this.indexFinished) {
                 this.treeManager = new TreeManager();
             }
             const action = (node: Node, zIndex: number, transformers: Array<Transformer>) => {
@@ -95,7 +98,7 @@ export default class LayerCached extends Layer {
             this.generator = (context) => {
                 if (this.cache) {
                     if (context) {
-                        context.drawImage(cache, minX, minY, width, height);
+                        context.drawImage(this.cache, minX, minY, width, height);
                     }
                     return true;
                 } else {
@@ -114,14 +117,17 @@ export default class LayerCached extends Layer {
                             next(cacheContext);
                             next = null;
 
-                            const child = this.children[index - 1];
-                            if (child.isHitEnabled()) {
-                                zIndex = child.index(action, zIndex, []) + 1;
+                            if (!this.indexFinished) {
+                                const child = this.children[index - 1];
+                                if (child.isHitEnabled()) {
+                                    zIndex = child.index(action, zIndex, []) + 1;
+                                }
                             }
 
                             if (index === this.children.length) {
                                 cacheContext.translate(minX, minY);
                                 this.cache = cache;
+                                this.indexFinished = true;
                             }
                         }
                     }
@@ -138,7 +144,7 @@ export default class LayerCached extends Layer {
     }
 
     intersection(point: Point): Node {
-        if (!this.treeManager) {
+        if (!this.indexFinished) {
             this.treeManager = new TreeManager();
             const action = (node: Node, zIndex: number, transformers: Array<Transformer>) => {
                 this.treeManager.index(node, zIndex, transformers);
@@ -149,6 +155,7 @@ export default class LayerCached extends Layer {
                     zIndex = child.index(action, zIndex, []) + 1;
                 }
             }
+            this.indexFinished = true;
         }
 
         return this.treeManager.intersection(point);
