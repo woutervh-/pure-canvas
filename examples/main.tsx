@@ -2,6 +2,8 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import Stage from '../src/Stage';
 import Circle, {CircleParameters} from '../src/Circle';
+import NodeFixedBounds from '../src/NodeFixedBounds';
+import Text from '../src/Text';
 import CanvasImage from '../src/Image';
 import Line from '../src/Line';
 import LineString from '../src/LineString';
@@ -36,7 +38,11 @@ class App extends React.Component<{}, {}> {
             const hoverRectangle = new Rectangle({x1: 0, y1: 0, x2: 8, y2: 8, strokeStyle: 'red'});
             const hoverPolygon = new Polygon({points: [[{x: 5, y: 5}, {x: 15, y: 5}, {x: 15, y: 15}, {x: 5, y: 15}], [{x: 7, y: 7}, {x: 7, y: 13}, {x: 13, y: 7}]], fillStyle: 'green'});
 
-            function* circleGenerator() {
+            function* circleGenerator(): IterableIterator<NodeFixedBounds> {
+                const text = new Text({x: 10, y: 50, text: 'Old McDonald', fontSize: 20});
+                yield text;
+                const {minX, maxX, minY, maxY} = text.getBounds();
+                yield new Rectangle({x1: minX, x2: maxX, y1: minY, y2: maxY, strokeStyle: 'red', fillStyle: 'transparent'});
                 for (let i = 0; i < 1e2; i++) {
                     const circle = new Circle({x: Math.random() * 800, y: Math.random() * 800, radius: 8, fillStyle: getRandomColor()});
                     circle.setHitEnabled(true);
@@ -56,8 +62,8 @@ class App extends React.Component<{}, {}> {
                 const node = getNode();
                 if (node) {
                     if (node instanceof Circle) {
-                        hoverLayer.x = node.x / 2;
-                        hoverLayer.y = node.y / 2;
+                        hoverLayer.x = (node as any).x / 2;
+                        hoverLayer.y = (node as any).y / 2;
                         hoverLayer.setChildren([hoverCircle]);
                     }
 
