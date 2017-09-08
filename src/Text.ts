@@ -35,7 +35,7 @@ class Text extends NodeFixedBounds {
     private direction: string = 'ltr';
 
     constructor({x = 0, y = 0, fillStyle = 'rgba(0, 0, 0, 1)', fontStyle = 'normal', fontVariant = 'normal', fontWeight = 'normal', fontSize = 10, fontFamily = 'sans-serif', text}: TextParameters) {
-        super({minX: x, minY: y, maxX: x + measureWidth(`${fontStyle} ${fontVariant} ${fontWeight} ${fontSize}px ${fontFamily}`, text), maxY: y - fontSize});
+        super({minX: x, minY: y - fontSize, maxX: x + measureWidth(`${fontStyle} ${fontVariant} ${fontWeight} ${fontSize}px ${fontFamily}`, text), maxY: y});
         this.x = x;
         this.y = y;
         this.fillStyle = fillStyle;
@@ -50,7 +50,6 @@ class Text extends NodeFixedBounds {
         const oldTextBaseline = context.textBaseline;
         const oldTextAlign = context.textAlign;
         const oldDirection = (context as any).direction;
-        console.log(font);
         context.font = font;
         context.fillStyle = fillStyle;
         context.textBaseline = textBaseline;

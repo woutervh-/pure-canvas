@@ -16,6 +16,7 @@ import colors from './colors';
 import * as triangle from './triangle.svg';
 import Layer from '../src/Layer';
 import LayerCached from '../src/LayerCached';
+import NodeIndexable from '../src/NodeIndexable';
 
 function getRandomColor() {
     return colors[Math.floor(Math.random() * colors.length)];
@@ -38,11 +39,15 @@ class App extends React.Component<{}, {}> {
             const hoverRectangle = new Rectangle({x1: 0, y1: 0, x2: 8, y2: 8, strokeStyle: 'red'});
             const hoverPolygon = new Polygon({points: [[{x: 5, y: 5}, {x: 15, y: 5}, {x: 15, y: 15}, {x: 5, y: 15}], [{x: 7, y: 7}, {x: 7, y: 13}, {x: 13, y: 7}]], fillStyle: 'green'});
 
-            function* circleGenerator(): IterableIterator<NodeFixedBounds> {
+            function* childrenGenerator(): IterableIterator<NodeIndexable> {
                 const text = new Text({x: 10, y: 50, text: 'Old McDonald', fontSize: 20});
-                yield text;
+                text.setHitEnabled(true);
                 const {minX, maxX, minY, maxY} = text.getBounds();
-                yield new Rectangle({x1: minX, x2: maxX, y1: minY, y2: maxY, strokeStyle: 'red', fillStyle: 'transparent'});
+                const rectangle = new Rectangle({x1: minX, x2: maxX, y1: minY, y2: maxY, strokeStyle: 'red', fillStyle: 'transparent'});
+                const layer = new Transform();
+                layer.rotate(Math.PI / 4);
+                layer.setChildren([text, rectangle]);
+                yield layer;
                 for (let i = 0; i < 1e2; i++) {
                     const circle = new Circle({x: Math.random() * 800, y: Math.random() * 800, radius: 8, fillStyle: getRandomColor()});
                     circle.setHitEnabled(true);
@@ -50,7 +55,7 @@ class App extends React.Component<{}, {}> {
                 }
             }
 
-            cachedLayer.setChildren({[Symbol.iterator]: () => circleGenerator()});
+            cachedLayer.setChildren({[Symbol.iterator]: () => childrenGenerator()});
             scaledHoverLayer.setChildren([hoverLayer]);
             const root = new Layer();
             root.setChildren([cachedLayer, scaledHoverLayer]);
@@ -65,6 +70,9 @@ class App extends React.Component<{}, {}> {
                         hoverLayer.x = (node as any).x / 2;
                         hoverLayer.y = (node as any).y / 2;
                         hoverLayer.setChildren([hoverCircle]);
+                    }
+                    if (node instanceof Text) {
+                        console.log('Had a farm.');
                     }
 
                     // switch (node.type) {
