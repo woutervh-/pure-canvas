@@ -40,12 +40,13 @@ class App extends React.Component<{}, {}> {
             const hoverPolygon = new Polygon({points: [[{x: 5, y: 5}, {x: 15, y: 5}, {x: 15, y: 15}, {x: 5, y: 15}], [{x: 7, y: 7}, {x: 7, y: 13}, {x: 13, y: 7}]], fillStyle: 'green'});
 
             function* childrenGenerator(): IterableIterator<NodeIndexable> {
-                const text = new Text({x: 10, y: 50, text: 'Old McDonald', fontSize: 20});
+                const text = new Text({textAlign: 'center', textBaseline: 'middle', text: 'Old McDonald', fontSize: 20});
                 text.setHitEnabled(true);
                 const {minX, maxX, minY, maxY} = text.getBounds();
                 const rectangle = new Rectangle({x1: minX, x2: maxX, y1: minY, y2: maxY, strokeStyle: 'red', fillStyle: 'transparent'});
                 const layer = new Transform();
                 layer.rotate(Math.PI / 4);
+                layer.translate(100, 100);
                 layer.setChildren([text, rectangle]);
                 yield layer;
                 for (let i = 0; i < 1e2; i++) {

@@ -1,4 +1,4 @@
-import Node, {Point} from './Node';
+import Node, {Bounds, Point} from './Node';
 import NodeFixedBounds from './NodeFixedBounds';
 
 const measurementCanvas = document.createElement('canvas');
@@ -11,6 +11,27 @@ function measureWidth(font: string, text: string): number {
     return measurementContext.measureText(text).width;
 }
 
+function getBounds(x: number, y: number, fontStyle: string, fontVariant: string, fontWeight: string, fontSize: number, fontFamily: string, textBaseline: string, textAlign: string, text: string): Bounds {
+    const width = measureWidth(`${fontStyle} ${fontVariant} ${fontWeight} ${fontSize}px ${fontFamily}`, text);
+    let startY = 0;
+    if (textBaseline === 'top' || textBaseline === 'hanging') {
+        startY = 0;
+    } else if (textBaseline === 'middle') {
+        startY = -fontSize / 2;
+    } else if (textBaseline === 'alphabetic' || textBaseline === 'ideographic' || textBaseline === 'bottom') {
+        startY = -fontSize;
+    }
+    let startX = 0;
+    if (textAlign === 'left' || textAlign === 'start') {
+        startX = 0;
+    } else if (textAlign === 'center') {
+        startX = -width / 2;
+    } else if (textAlign === 'right' || textAlign === 'end') {
+        startX = -width;
+    }
+    return {minX: x + startX, minY: y + startY, maxX: x + startX + width, maxY: y + startY + fontSize};
+}
+
 export interface TextParameters {
     x?: number;
     y?: number;
@@ -20,6 +41,8 @@ export interface TextParameters {
     fontWeight?: string;
     fontSize?: number;
     fontFamily?: string;
+    textBaseline?: string;
+    textAlign?: string;
     text: string;
 }
 
@@ -29,17 +52,19 @@ class Text extends NodeFixedBounds {
     private fillStyle: string;
     private font: string;
     private text: string;
-    /* The following three values are necessary to guarantee correct measurements */
-    private textBaseline: string = 'alphabetic';
-    private textAlign: string = 'start';
+    private textBaseline: string;
+    private textAlign: string;
+    /* The following value is necessary to guarantee correct measurements */
     private direction: string = 'ltr';
 
-    constructor({x = 0, y = 0, fillStyle = 'rgba(0, 0, 0, 1)', fontStyle = 'normal', fontVariant = 'normal', fontWeight = 'normal', fontSize = 10, fontFamily = 'sans-serif', text}: TextParameters) {
-        super({minX: x, minY: y - fontSize, maxX: x + measureWidth(`${fontStyle} ${fontVariant} ${fontWeight} ${fontSize}px ${fontFamily}`, text), maxY: y});
+    constructor({x = 0, y = 0, fillStyle = 'rgba(0, 0, 0, 1)', fontStyle = 'normal', fontVariant = 'normal', fontWeight = 'normal', fontSize = 10, fontFamily = 'sans-serif', textBaseline = 'alphabetic', textAlign = 'start', text}: TextParameters) {
+        super(getBounds(x, y, fontStyle, fontVariant, fontWeight, fontSize, fontFamily, textBaseline, textAlign, text));
         this.x = x;
         this.y = y;
         this.fillStyle = fillStyle;
         this.font = `${fontStyle} ${fontVariant} ${fontWeight} ${fontSize}px ${fontFamily}`;
+        this.textBaseline = textBaseline;
+        this.textAlign = textAlign;
         this.text = text;
     }
 
