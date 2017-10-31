@@ -76,7 +76,7 @@ class Polygon extends NodeFixedBounds {
         context.fillStyle = oldFillStyle;
     }
 
-    intersection({x, y}: Point): Node {
+    intersection({x, y}: Point): Node | undefined {
         const {points, lineWidth} = this;
         const vertices: Array<Point> = [];
 

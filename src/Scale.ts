@@ -30,7 +30,7 @@ export default class Scale extends TransformerBase {
         };
     }
 
-    intersection(point: Point): Node {
+    intersection(point: Point): Node | undefined {
         const scaledPoint = {x: point.x / this._x, y: point.y / this._y};
         return super.intersection(scaledPoint);
     }

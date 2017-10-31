@@ -1,5 +1,6 @@
 import {EventEmitter} from 'eventemitter3';
 import Node from './Node';
+import {getSafeContext} from './util';
 
 export default class Stage extends EventEmitter {
     private canvas: HTMLCanvasElement;
@@ -13,7 +14,7 @@ export default class Stage extends EventEmitter {
     constructor(canvas: HTMLCanvasElement) {
         super();
         this.canvas = canvas;
-        this.context = canvas.getContext('2d');
+        this.context = getSafeContext(canvas);
 
         this.canvas.addEventListener('mousedown', this.handleMouseDown);
         this.canvas.addEventListener('mousemove', this.handleMouseMove);
@@ -38,7 +39,7 @@ export default class Stage extends EventEmitter {
 
     emitHitEvent(name: string, event: MouseEvent): void {
         let didSearch: boolean = false;
-        let result: Node = undefined;
+        let result: Node | undefined = undefined;
         this.emit(name, () => {
             if (!didSearch && this.internalNode) {
                 const point = this.eventToElementCoordinate(event);
@@ -73,33 +74,35 @@ export default class Stage extends EventEmitter {
     }
 
     renderAsynchronous(maxBatchTime: number = 10): void {
-        const that = this;
-        const next = this.node.steps();
-        let done = false;
+        if (this.node) {
+            const that = this;
+            const next = this.node.steps();
+            let done = false;
 
-        (function batch() {
-            if (that.nonBlockingTimeoutId) {
-                window.clearTimeout(that.nonBlockingTimeoutId);
-            }
+            (function batch() {
+                if (that.nonBlockingTimeoutId) {
+                    window.clearTimeout(that.nonBlockingTimeoutId);
+                }
 
-            const deadline = performance.now() + maxBatchTime;
-            while (!done && performance.now() < deadline) {
-                done = next();
-            }
+                const deadline = performance.now() + maxBatchTime;
+                while (!done && performance.now() < deadline) {
+                    done = next();
+                }
 
-            that.context.clearRect(0, 0, that.canvas.width, that.canvas.height);
-            next(that.context);
-            if (!done) {
-                that.nonBlockingTimeoutId = window.setTimeout(batch, 0);
-            }
-        })();
+                that.context.clearRect(0, 0, that.canvas.width, that.canvas.height);
+                next(that.context);
+                if (!done) {
+                    that.nonBlockingTimeoutId = window.setTimeout(batch, 0);
+                }
+            })();
+        }
     }
 
-    get node(): Node {
+    get node(): Node | undefined {
         return this.internalNode;
     }
 
-    set node(value: Node) {
+    set node(value: Node | undefined) {
         this.internalNode = value;
     }
 };

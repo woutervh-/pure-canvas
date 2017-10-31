@@ -3,6 +3,7 @@ import Layer from './Layer';
 import TreeManager from './TreeManager';
 import Transformer from './Transformer';
 import NodeIndexable from './NodeIndexable';
+import {getSafeContext} from './util';
 
 export default class LayerCached extends Layer {
     private caching: boolean = false;
@@ -65,7 +66,7 @@ export default class LayerCached extends Layer {
             const cache = document.createElement('canvas');
             cache.width = width;
             cache.height = height;
-            const cacheContext = cache.getContext('2d');
+            const cacheContext = getSafeContext(cache);
             if (!this.indexFinished) {
                 this.treeManager = new TreeManager();
             }
@@ -75,8 +76,8 @@ export default class LayerCached extends Layer {
 
             const children = this.children[Symbol.iterator]();
             let zIndex = 0;
-            let nextChild: IteratorResult<NodeIndexable>;
-            let next: (context?: CanvasRenderingContext2D) => boolean;
+            let nextChild: IteratorResult<NodeIndexable> | null = null;
+            let next: ((context?: CanvasRenderingContext2D) => boolean) | null = null;
             let first: boolean = true;
             let last: boolean = false;
             this.generator = (context) => {
@@ -104,7 +105,7 @@ export default class LayerCached extends Layer {
                                 last = true;
                             }
                         }
-                        if (next && next()) {
+                        if (next && nextChild && next()) {
                             next(cacheContext);
                             if (!this.indexFinished) {
                                 if (nextChild.value.isHitEnabled()) {
@@ -127,7 +128,7 @@ export default class LayerCached extends Layer {
         return zIndex;
     }
 
-    intersection(point: Point): Node {
+    intersection(point: Point): Node | undefined {
         if (!this.treeManager) {
             this.treeManager = new TreeManager();
             const action = (node: Node, zIndex: number, transformers: Array<Transformer>) => {

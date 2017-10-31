@@ -62,7 +62,7 @@ class LineString extends NodeFixedBounds {
         context.lineCap = oldLineCap;
     }
 
-    intersection({x, y}: Point): Node {
+    intersection({x, y}: Point): Node | undefined {
         const {points, lineWidth} = this;
 
         for (let i = 1; i < points.length; i++) {

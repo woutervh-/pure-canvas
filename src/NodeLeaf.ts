@@ -9,7 +9,7 @@ abstract class NodeLeaf extends NodeBase {
 
     abstract draw(context: CanvasRenderingContext2D): void;
 
-    abstract intersection(point: Point): Node;
+    abstract intersection(point: Point): Node | undefined;
 
     constructor() {
         super();

@@ -1,10 +1,11 @@
 import Node, {Bounds, Point} from './Node';
 import NodeFixedBounds from './NodeFixedBounds';
+import {getSafeContext} from './util';
 
 const measurementCanvas = document.createElement('canvas');
 measurementCanvas.width = 0;
 measurementCanvas.height = 0;
-const measurementContext = measurementCanvas.getContext('2d');
+const measurementContext = getSafeContext(measurementCanvas);
 
 function measureWidth(font: string, text: string): number {
     measurementContext.font = font;
@@ -88,7 +89,7 @@ class Text extends NodeFixedBounds {
         (context as any).direction = oldDirection;
     }
 
-    intersection({x: px, y: py}: Point): Node {
+    intersection({x: px, y: py}: Point): Node | undefined {
         const {minX, minY, maxX, maxY} = this.getBounds();
         if (minX <= px && px <= maxX && minY <= py && py <= maxY) {
             return this;

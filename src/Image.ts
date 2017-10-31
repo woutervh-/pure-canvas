@@ -1,5 +1,6 @@
 import Node, {Point} from './Node';
 import NodeFixedBounds from './NodeFixedBounds';
+import {getSafeContext} from './util';
 
 export interface ImageParameters {
     x?: number;
@@ -35,7 +36,7 @@ class Image extends NodeFixedBounds {
         }
     }
 
-    intersection({x, y}: Point): Node {
+    intersection({x, y}: Point): Node | undefined {
         const {x: ox, y: oy, width, height, image} = this;
         const rx = Math.round(x - ox);
         const ry = Math.round(y - oy);
@@ -45,7 +46,7 @@ class Image extends NodeFixedBounds {
                 const hitCanvas: HTMLCanvasElement = document.createElement('canvas');
                 hitCanvas.width = width;
                 hitCanvas.height = height;
-                const hitContext: CanvasRenderingContext2D = hitCanvas.getContext('2d');
+                const hitContext: CanvasRenderingContext2D = getSafeContext(hitCanvas);
                 try {
                     hitContext.drawImage(image, 0, 0, width, height);
                 } catch (invalidStateError) {

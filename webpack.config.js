@@ -16,15 +16,11 @@ module.exports = {
     module: {
         loaders: [
             {test: /\.svg$/, loader: 'url'},
-            {test: /\.tsx?$/, loader: 'ts-loader'}
+            {test: /\.tsx?$/, loader: 'awesome-typescript-loader?configFileName=tsconfig.examples.json'}
         ],
         preLoaders: [
             {test: /\.js$/, loader: 'source-map-loader'}
         ]
-    },
-
-    ts: {
-        configFileName: 'tsconfig.examples.json'
     },
 
     plugins: [

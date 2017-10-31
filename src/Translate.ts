@@ -30,7 +30,7 @@ export default class Translate extends TransformerBase {
         };
     }
 
-    intersection(point: Point): Node {
+    intersection(point: Point): Node | undefined {
         const translatedPoint = {x: point.x - this._x, y: point.y - this._y};
         return super.intersection(translatedPoint);
     }

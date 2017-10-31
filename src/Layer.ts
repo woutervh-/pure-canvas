@@ -59,7 +59,7 @@ class Layer extends NodeBase {
         return {minX, minY, maxX, maxY};
     }
 
-    intersection(point: Point): Node {
+    intersection(point: Point): Node | undefined {
         // Visit children in reverse order: the ones drawn last must be checked first
         for (const child of Array.from(this.children).reverse()) {
             if (child.isHitEnabled()) {

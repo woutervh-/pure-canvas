@@ -54,7 +54,7 @@ class Circle extends NodeFixedBounds {
         context.lineWidth = oldLineWidth;
     }
 
-    intersection({x, y}: Point): Node {
+    intersection({x, y}: Point): Node | undefined {
         const {x: ox, y: oy, radius, lineWidth} = this;
         if ((x - ox) ** 2 + (y - oy) ** 2 <= (radius + lineWidth / 2) ** 2) {
             return this;

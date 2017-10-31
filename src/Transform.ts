@@ -40,7 +40,7 @@ export default class Transform extends TransformerBase {
         return {minX, minY, maxX, maxY};
     }
 
-    intersection(point: Point): Node {
+    intersection(point: Point): Node | undefined {
         const untransformedPoint = this.untransform(point);
         return super.intersection(untransformedPoint);
     }

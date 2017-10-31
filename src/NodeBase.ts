@@ -1,6 +1,7 @@
 import Node, {Bounds, Point} from './Node';
 import NodeIndexable from './NodeIndexable';
 import Transformer from './Transformer';
+import {getSafeContext} from './util';
 
 abstract class NodeBase implements NodeIndexable {
     abstract getBounds(): Bounds;
@@ -9,14 +10,14 @@ abstract class NodeBase implements NodeIndexable {
 
     abstract steps(): (context?: CanvasRenderingContext2D) => boolean;
 
-    abstract intersection(point: Point): Node;
+    abstract intersection(point: Point): Node | undefined;
 
     toImage(): HTMLCanvasElement {
         const {minX, minY, maxX, maxY} = this.getBounds();
         const canvas = document.createElement('canvas');
         canvas.width = maxX - minX;
         canvas.height = maxY - minY;
-        const context = canvas.getContext('2d');
+        const context = getSafeContext(canvas);
         context.translate(-minX, -minY);
         this.draw(context);
         context.translate(minX, minY);

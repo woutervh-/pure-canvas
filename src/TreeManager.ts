@@ -27,7 +27,7 @@ export default class TreeManager {
         }
     }
 
-    intersection(point: Point): Node {
+    intersection(point: Point): Node | undefined {
         const results = this.tree
             .search({minX: point.x, minY: point.y, maxX: point.x, maxY: point.y})
             .sort((a: IndexedNode, b: IndexedNode) => b.zIndex - a.zIndex);

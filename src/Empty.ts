@@ -9,8 +9,8 @@ class Empty extends NodeFixedBounds {
     draw(context: CanvasRenderingContext2D): void {
     }
 
-    intersection({x, y}: Point): Node {
-        return null;
+    intersection({x, y}: Point): Node | undefined {
+        return undefined;
     }
 }
 

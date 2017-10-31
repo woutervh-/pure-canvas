@@ -58,7 +58,7 @@ class Line extends NodeFixedBounds {
         context.lineCap = oldLineCap;
     }
 
-    intersection({x, y}: Point): Node {
+    intersection({x, y}: Point): Node | undefined {
         const {x1, y1, x2, y2, lineWidth} = this;
         const distance2 = (x2 - x1) ** 2 + (y2 - y1) ** 2;
         let t: number;

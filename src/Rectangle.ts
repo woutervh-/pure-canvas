@@ -58,7 +58,7 @@ class Rectangle extends NodeFixedBounds {
         context.lineWidth = oldLineWidth;
     }
 
-    intersection({x: px, y: py}: Point): Node {
+    intersection({x: px, y: py}: Point): Node | undefined {
         const {minX, minY, maxX, maxY} = this.getBounds();
         if (minX <= px && px <= maxX && minY <= py && py <= maxY) {
             return this;

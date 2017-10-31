@@ -17,7 +17,7 @@ interface Node {
     
     steps(): (context?: CanvasRenderingContext2D) => boolean;
 
-    intersection(point: Point): Node;
+    intersection(point: Point): Node | undefined;
 
     toImage(): HTMLCanvasElement;
 
