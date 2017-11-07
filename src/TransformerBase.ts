@@ -2,7 +2,7 @@ import Node, {Point} from './Node';
 import Layer from './Layer';
 import Transformer from './Transformer';
 
-abstract class TransformerBase extends Layer implements Transformer {
+abstract class TransformerBase<T> extends Layer<T> implements Transformer {
     abstract transform(point: Point): Point;
 
     abstract untransform(point: Point): Point;
@@ -35,7 +35,7 @@ abstract class TransformerBase extends Layer implements Transformer {
         };
     }
 
-    index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number, transformers: Array<Transformer>): number {
+    index(action: (node: Node<T>, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number, transformers: Array<Transformer>): number {
         return super.index(action, zIndex, [...transformers, this]);
     }
 }

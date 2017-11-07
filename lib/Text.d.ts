@@ -1,4 +1,4 @@
-import Node, { Point } from './Node';
+import { Point } from './Node';
 import NodeFixedBounds from './NodeFixedBounds';
 export interface TextParameters {
     x?: number;
@@ -13,7 +13,7 @@ export interface TextParameters {
     textAlign?: string;
     text: string;
 }
-declare class Text extends NodeFixedBounds {
+declare class Text<T> extends NodeFixedBounds<T> {
     private x;
     private y;
     private fillStyle;
@@ -24,6 +24,6 @@ declare class Text extends NodeFixedBounds {
     private direction;
     constructor({x, y, fillStyle, fontStyle, fontVariant, fontWeight, fontSize, fontFamily, textBaseline, textAlign, text}: TextParameters);
     draw(context: CanvasRenderingContext2D): void;
-    intersection({x: px, y: py}: Point): Node | undefined;
+    intersection({x: px, y: py}: Point): Text<T> | undefined;
 }
 export default Text;

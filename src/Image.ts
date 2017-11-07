@@ -10,7 +10,7 @@ export interface ImageParameters {
     image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
 }
 
-class Image extends NodeFixedBounds {
+class Image<T> extends NodeFixedBounds<T> {
     private x: number;
     private y: number;
     private width: number;
@@ -36,7 +36,7 @@ class Image extends NodeFixedBounds {
         }
     }
 
-    intersection({x, y}: Point): Node | undefined {
+    intersection({x, y}: Point): Image<T> | undefined {
         const {x: ox, y: oy, width, height, image} = this;
         const rx = Math.round(x - ox);
         const ry = Math.round(y - oy);

@@ -1,7 +1,7 @@
 import Node, {Bounds, Point} from './Node';
 import TransformerBase from './TransformerBase';
 
-export default class Scale extends TransformerBase {
+export default class Scale<T> extends TransformerBase<T> {
     private _x: number;
 
     private _y: number;
@@ -30,7 +30,7 @@ export default class Scale extends TransformerBase {
         };
     }
 
-    intersection(point: Point): Node | undefined {
+    intersection(point: Point): Node<T> | undefined {
         const scaledPoint = {x: point.x / this._x, y: point.y / this._y};
         return super.intersection(scaledPoint);
     }

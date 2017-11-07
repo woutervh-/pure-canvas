@@ -1,8 +1,8 @@
 import Transformer from './Transformer';
 import Node from './Node';
-interface IndexedNode extends rbush.BBox {
+interface IndexedNode<T> extends rbush.BBox {
     transformers: Array<Transformer>;
-    node: Node;
+    node: Node<T>;
     zIndex: number;
 }
 export default IndexedNode;

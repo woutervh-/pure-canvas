@@ -1,7 +1,7 @@
 import {Bounds} from './Node';
 import NodeLeaf from './NodeLeaf';
 
-abstract class NodeFixedBounds extends NodeLeaf {
+abstract class NodeFixedBounds<T> extends NodeLeaf<T> {
     private bounds: Bounds;
 
     constructor(bounds: Bounds) {

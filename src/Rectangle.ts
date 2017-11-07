@@ -11,7 +11,7 @@ export interface RectangleParameters {
     fillStyle?: string;
 }
 
-class Rectangle extends NodeFixedBounds {
+class Rectangle<T> extends NodeFixedBounds<T> {
     private x1: number;
     private y1: number;
     private x2: number;
@@ -58,7 +58,7 @@ class Rectangle extends NodeFixedBounds {
         context.lineWidth = oldLineWidth;
     }
 
-    intersection({x: px, y: py}: Point): Node | undefined {
+    intersection({x: px, y: py}: Point): Rectangle<T> | undefined {
         const {minX, minY, maxX, maxY} = this.getBounds();
         if (minX <= px && px <= maxX && minY <= py && py <= maxY) {
             return this;

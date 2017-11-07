@@ -1,6 +1,6 @@
 import Node, { Bounds, Point } from './Node';
 import TransformerBase from './TransformerBase';
-export default class Scale extends TransformerBase {
+export default class Scale<T> extends TransformerBase<T> {
     private _x;
     private _y;
     constructor({x, y}?: {
@@ -10,7 +10,7 @@ export default class Scale extends TransformerBase {
     preDraw(context: CanvasRenderingContext2D): void;
     postDraw(context: CanvasRenderingContext2D): void;
     getBounds(): Bounds;
-    intersection(point: Point): Node | undefined;
+    intersection(point: Point): Node<T> | undefined;
     transform(point: Point): Point;
     untransform(point: Point): Point;
     x: number;

@@ -6,13 +6,13 @@ export interface LineStringParameters {
     lineWidth?: number;
     lineCap?: string;
 }
-declare class LineString extends NodeFixedBounds {
+declare class LineString<T> extends NodeFixedBounds<T> {
     private points;
     private strokeStyle;
     private lineWidth;
     private lineCap;
     constructor({points, strokeStyle, lineWidth, lineCap}: LineStringParameters);
     draw(context: CanvasRenderingContext2D): void;
-    intersection({x, y}: Point): Node | undefined;
+    intersection({x, y}: Point): Node<T> | undefined;
 }
 export default LineString;

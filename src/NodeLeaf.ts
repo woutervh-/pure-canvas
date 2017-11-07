@@ -2,14 +2,14 @@ import Node, {Point, Bounds} from './Node';
 import NodeBase from './NodeBase';
 import Transformer from './Transformer';
 
-abstract class NodeLeaf extends NodeBase {
+abstract class NodeLeaf<T> extends NodeBase<T> {
     private hitEnabled: boolean = false;
 
     abstract getBounds(): Bounds;
 
     abstract draw(context: CanvasRenderingContext2D): void;
 
-    abstract intersection(point: Point): Node | undefined;
+    abstract intersection(point: Point): Node<T> | undefined;
 
     constructor() {
         super();
@@ -34,7 +34,7 @@ abstract class NodeLeaf extends NodeBase {
         this.hitEnabled = value;
     }
 
-    index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number, transformers: Array<Transformer>): number {
+    index(action: (node: Node<T>, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number, transformers: Array<Transformer>): number {
         action(this, zIndex, transformers);
         return zIndex;
     }

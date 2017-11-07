@@ -1,6 +1,6 @@
 import { EventEmitter } from 'eventemitter3';
 import Node from './Node';
-export default class Stage extends EventEmitter {
+export default class Stage<T = {}> extends EventEmitter {
     private canvas;
     private context;
     private internalNode?;

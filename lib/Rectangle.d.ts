@@ -1,4 +1,4 @@
-import Node, { Point } from './Node';
+import { Point } from './Node';
 import NodeFixedBounds from './NodeFixedBounds';
 export interface RectangleParameters {
     x1: number;
@@ -9,7 +9,7 @@ export interface RectangleParameters {
     lineWidth?: number;
     fillStyle?: string;
 }
-declare class Rectangle extends NodeFixedBounds {
+declare class Rectangle<T> extends NodeFixedBounds<T> {
     private x1;
     private y1;
     private x2;
@@ -19,6 +19,6 @@ declare class Rectangle extends NodeFixedBounds {
     private fillStyle;
     constructor({x1, y1, x2, y2, strokeStyle, lineWidth, fillStyle}: RectangleParameters);
     draw(context: CanvasRenderingContext2D): void;
-    intersection({x: px, y: py}: Point): Node | undefined;
+    intersection({x: px, y: py}: Point): Rectangle<T> | undefined;
 }
 export default Rectangle;

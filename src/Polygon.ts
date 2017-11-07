@@ -10,7 +10,7 @@ export interface PolygonParameters {
     fillStyle?: string;
 }
 
-class Polygon extends NodeFixedBounds {
+class Polygon<T> extends NodeFixedBounds<T> {
     private points: Array<Array<Point>>;
     private strokeStyle: string;
     private lineWidth: number;
@@ -76,7 +76,7 @@ class Polygon extends NodeFixedBounds {
         context.fillStyle = oldFillStyle;
     }
 
-    intersection({x, y}: Point): Node | undefined {
+    intersection({x, y}: Point): Polygon<T> | undefined {
         const {points, lineWidth} = this;
         const vertices: Array<Point> = [];
 

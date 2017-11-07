@@ -1,7 +1,7 @@
 import Node, { Point, Bounds } from './Node';
 import Layer from './Layer';
 import Transformer from './Transformer';
-export default class LayerCached extends Layer {
+export default class LayerCached<T> extends Layer<T> {
     private caching;
     private cache;
     private generator;
@@ -15,6 +15,6 @@ export default class LayerCached extends Layer {
     getBounds(): Bounds;
     draw(context: CanvasRenderingContext2D): void;
     steps(): (context?: CanvasRenderingContext2D) => boolean;
-    index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number, transformers: Array<Transformer>): number;
-    intersection(point: Point): Node | undefined;
+    index(action: (node: Node<T>, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number, transformers: Array<Transformer>): number;
+    intersection(point: Point): Node<T> | undefined;
 }

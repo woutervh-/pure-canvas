@@ -3,17 +3,17 @@ import NodeIndexable from './NodeIndexable';
 import NodeBase from './NodeBase';
 import Transformer from './Transformer';
 
-class Layer extends NodeBase {
+class Layer<T> extends NodeBase<T> {
     private hitEnabled: boolean = true;
 
-    protected children: Iterable<NodeIndexable>;
+    protected children: Iterable<NodeIndexable<T>>;
 
-    constructor(children: Iterable<NodeIndexable> = []) {
+    constructor(children: Iterable<NodeIndexable<T>> = []) {
         super();
         this.children = children;
     }
 
-    setChildren(children: Iterable<NodeIndexable>) {
+    setChildren(children: Iterable<NodeIndexable<T>>) {
         this.children = children;
     }
 
@@ -59,7 +59,7 @@ class Layer extends NodeBase {
         return {minX, minY, maxX, maxY};
     }
 
-    intersection(point: Point): Node | undefined {
+    intersection(point: Point): Node<T> | undefined {
         // Visit children in reverse order: the ones drawn last must be checked first
         for (const child of Array.from(this.children).reverse()) {
             if (child.isHitEnabled()) {
@@ -71,7 +71,7 @@ class Layer extends NodeBase {
         }
     }
 
-    index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number, transformers: Array<Transformer>): number {
+    index(action: (node: Node<T>, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number, transformers: Array<Transformer>): number {
         for (const child of this.children) {
             if (child.isHitEnabled()) {
                 zIndex = child.index(action, zIndex, transformers) + 1;

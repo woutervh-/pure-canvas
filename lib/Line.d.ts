@@ -1,4 +1,4 @@
-import Node, { Point } from './Node';
+import { Point } from './Node';
 import NodeFixedBounds from './NodeFixedBounds';
 export interface LineParameters {
     x1: number;
@@ -9,7 +9,7 @@ export interface LineParameters {
     lineWidth?: number;
     lineCap?: string;
 }
-declare class Line extends NodeFixedBounds {
+declare class Line<T> extends NodeFixedBounds<T> {
     private x1;
     private y1;
     private x2;
@@ -19,6 +19,6 @@ declare class Line extends NodeFixedBounds {
     private lineCap;
     constructor({x1, y1, x2, y2, strokeStyle, lineWidth, lineCap}: LineParameters);
     draw(context: CanvasRenderingContext2D): void;
-    intersection({x, y}: Point): Node | undefined;
+    intersection({x, y}: Point): Line<T> | undefined;
 }
 export default Line;

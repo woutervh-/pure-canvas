@@ -47,7 +47,7 @@ export interface TextParameters {
     text: string;
 }
 
-class Text extends NodeFixedBounds {
+class Text<T> extends NodeFixedBounds<T> {
     private x: number;
     private y: number;
     private fillStyle: string;
@@ -89,7 +89,7 @@ class Text extends NodeFixedBounds {
         (context as any).direction = oldDirection;
     }
 
-    intersection({x: px, y: py}: Point): Node | undefined {
+    intersection({x: px, y: py}: Point): Text<T> | undefined {
         const {minX, minY, maxX, maxY} = this.getBounds();
         if (minX <= px && px <= maxX && minY <= py && py <= maxY) {
             return this;

@@ -10,7 +10,7 @@ export interface CircleParameters {
     fillStyle?: string;
 }
 
-class Circle extends NodeFixedBounds {
+class Circle<T> extends NodeFixedBounds<T> {
     private x: number;
     private y: number;
     private radius: number;
@@ -54,7 +54,7 @@ class Circle extends NodeFixedBounds {
         context.lineWidth = oldLineWidth;
     }
 
-    intersection({x, y}: Point): Node | undefined {
+    intersection({x, y}: Point): Circle<T> | undefined {
         const {x: ox, y: oy, radius, lineWidth} = this;
         if ((x - ox) ** 2 + (y - oy) ** 2 <= (radius + lineWidth / 2) ** 2) {
             return this;

@@ -1,4 +1,4 @@
-import Node, { Point } from './Node';
+import { Point } from './Node';
 import NodeFixedBounds from './NodeFixedBounds';
 export interface PolygonParameters {
     points: Array<Array<Point>>;
@@ -6,13 +6,13 @@ export interface PolygonParameters {
     lineWidth?: number;
     fillStyle?: string;
 }
-declare class Polygon extends NodeFixedBounds {
+declare class Polygon<T> extends NodeFixedBounds<T> {
     private points;
     private strokeStyle;
     private lineWidth;
     private fillStyle;
     constructor({points, strokeStyle, lineWidth, fillStyle}: PolygonParameters);
     draw(context: CanvasRenderingContext2D): void;
-    intersection({x, y}: Point): Node | undefined;
+    intersection({x, y}: Point): Polygon<T> | undefined;
 }
 export default Polygon;

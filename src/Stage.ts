@@ -2,12 +2,12 @@ import {EventEmitter} from 'eventemitter3';
 import Node from './Node';
 import {getSafeContext} from './util';
 
-export default class Stage extends EventEmitter {
+export default class Stage<T = {}> extends EventEmitter {
     private canvas: HTMLCanvasElement;
 
     private context: CanvasRenderingContext2D;
 
-    private internalNode?: Node;
+    private internalNode?: Node<T>;
 
     private nonBlockingTimeoutId?: number;
 
@@ -39,7 +39,7 @@ export default class Stage extends EventEmitter {
 
     emitHitEvent(name: string, event: MouseEvent): void {
         let didSearch: boolean = false;
-        let result: Node | undefined = undefined;
+        let result: Node<T> | undefined = undefined;
         this.emit(name, () => {
             if (!didSearch && this.internalNode) {
                 const point = this.eventToElementCoordinate(event);

@@ -3,14 +3,14 @@ import IndexedNode from './IndexedNode';
 import Transformer from './Transformer';
 import Node, {Point} from './Node';
 
-export default class TreeManager {
-    private tree: rbush.RBush<IndexedNode> = rbush<IndexedNode>();
+export default class TreeManager<T> {
+    private tree: rbush.RBush<IndexedNode<T>> = rbush<IndexedNode<T>>();
 
     clear() {
         this.tree.clear();
     }
 
-    index(node: Node, zIndex: number, transformers: Array<Transformer>) {
+    index(node: Node<T>, zIndex: number, transformers: Array<Transformer>) {
         const bounds = node.getBounds();
         if (Number.isFinite(bounds.minX) && Number.isFinite(bounds.minY) && Number.isFinite(bounds.maxX) && Number.isFinite(bounds.maxY)) {
             let minX: number, minY: number, maxX: number, maxY: number;
@@ -27,10 +27,10 @@ export default class TreeManager {
         }
     }
 
-    intersection(point: Point): Node | undefined {
+    intersection(point: Point): Node<T> | undefined {
         const results = this.tree
             .search({minX: point.x, minY: point.y, maxX: point.x, maxY: point.y})
-            .sort((a: IndexedNode, b: IndexedNode) => b.zIndex - a.zIndex);
+            .sort((a: IndexedNode<T>, b: IndexedNode<T>) => b.zIndex - a.zIndex);
         for (const indexedNode of results) {
             const untransformedPoint = indexedNode.transformers.reduceRight((point: Point, transformer: Transformer) => transformer.untransform(point), point);
             const node = indexedNode.node.intersection(untransformedPoint);

@@ -11,7 +11,7 @@ export interface LineParameters {
     lineCap?: string;
 }
 
-class Line extends NodeFixedBounds {
+class Line<T> extends NodeFixedBounds<T> {
     private x1: number;
     private y1: number;
     private x2: number;
@@ -58,7 +58,7 @@ class Line extends NodeFixedBounds {
         context.lineCap = oldLineCap;
     }
 
-    intersection({x, y}: Point): Node | undefined {
+    intersection({x, y}: Point): Line<T> | undefined {
         const {x1, y1, x2, y2, lineWidth} = this;
         const distance2 = (x2 - x1) ** 2 + (y2 - y1) ** 2;
         let t: number;

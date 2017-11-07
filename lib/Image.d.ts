@@ -1,4 +1,4 @@
-import Node, { Point } from './Node';
+import { Point } from './Node';
 import NodeFixedBounds from './NodeFixedBounds';
 export interface ImageParameters {
     x?: number;
@@ -7,7 +7,7 @@ export interface ImageParameters {
     height: number;
     image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
 }
-declare class Image extends NodeFixedBounds {
+declare class Image<T> extends NodeFixedBounds<T> {
     private x;
     private y;
     private width;
@@ -16,6 +16,6 @@ declare class Image extends NodeFixedBounds {
     private pixelArray;
     constructor({x, y, width, height, image}: ImageParameters);
     draw(context: CanvasRenderingContext2D): void;
-    intersection({x, y}: Point): Node | undefined;
+    intersection({x, y}: Point): Image<T> | undefined;
 }
 export default Image;

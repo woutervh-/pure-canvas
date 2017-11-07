@@ -1,4 +1,4 @@
-import Node, { Point } from './Node';
+import { Point } from './Node';
 import NodeFixedBounds from './NodeFixedBounds';
 export interface CircleParameters {
     x?: number;
@@ -8,7 +8,7 @@ export interface CircleParameters {
     strokeStyle?: string;
     fillStyle?: string;
 }
-declare class Circle extends NodeFixedBounds {
+declare class Circle<T> extends NodeFixedBounds<T> {
     private x;
     private y;
     private radius;
@@ -17,6 +17,6 @@ declare class Circle extends NodeFixedBounds {
     private fillStyle;
     constructor({x, y, radius, lineWidth, strokeStyle, fillStyle}: CircleParameters);
     draw(context: CanvasRenderingContext2D): void;
-    intersection({x, y}: Point): Node | undefined;
+    intersection({x, y}: Point): Circle<T> | undefined;
 }
 export default Circle;

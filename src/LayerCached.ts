@@ -5,14 +5,14 @@ import Transformer from './Transformer';
 import NodeIndexable from './NodeIndexable';
 import {getSafeContext} from './util';
 
-export default class LayerCached extends Layer {
+export default class LayerCached<T> extends Layer<T> {
     private caching: boolean = false;
 
     private cache: HTMLCanvasElement;
 
     private generator: (context?: CanvasRenderingContext2D) => boolean;
 
-    private treeManager: TreeManager;
+    private treeManager: TreeManager<T>;
 
     private indexFinished: boolean = false;
 
@@ -70,13 +70,13 @@ export default class LayerCached extends Layer {
             if (!this.indexFinished) {
                 this.treeManager = new TreeManager();
             }
-            const action = (node: Node, zIndex: number, transformers: Array<Transformer>) => {
+            const action = (node: Node<T>, zIndex: number, transformers: Array<Transformer>) => {
                 this.treeManager.index(node, zIndex, transformers);
             };
 
             const children = this.children[Symbol.iterator]();
             let zIndex = 0;
-            let nextChild: IteratorResult<NodeIndexable> | null = null;
+            let nextChild: IteratorResult<NodeIndexable<T>> | null = null;
             let next: ((context?: CanvasRenderingContext2D) => boolean) | null = null;
             let first: boolean = true;
             let last: boolean = false;
@@ -123,15 +123,15 @@ export default class LayerCached extends Layer {
         return this.generator;
     }
 
-    index(action: (node: Node, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number, transformers: Array<Transformer>): number {
+    index(action: (node: Node<T>, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number, transformers: Array<Transformer>): number {
         action(this, zIndex, transformers);
         return zIndex;
     }
 
-    intersection(point: Point): Node | undefined {
+    intersection(point: Point): Node<T> | undefined {
         if (!this.treeManager) {
             this.treeManager = new TreeManager();
-            const action = (node: Node, zIndex: number, transformers: Array<Transformer>) => {
+            const action = (node: Node<T>, zIndex: number, transformers: Array<Transformer>) => {
                 this.treeManager.index(node, zIndex, transformers);
             };
             let zIndex = 0;

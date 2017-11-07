@@ -1,7 +1,7 @@
 import Node, {Bounds, Point} from './Node';
 import TransformerBase from './TransformerBase';
 
-export default class Transform extends TransformerBase {
+export default class Transform<T> extends TransformerBase<T> {
     private _a: number;
 
     private _b: number;
@@ -40,7 +40,7 @@ export default class Transform extends TransformerBase {
         return {minX, minY, maxX, maxY};
     }
 
-    intersection(point: Point): Node | undefined {
+    intersection(point: Point): Node<T> | undefined {
         const untransformedPoint = this.untransform(point);
         return super.intersection(untransformedPoint);
     }

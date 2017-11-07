@@ -8,7 +8,7 @@ export interface LineStringParameters {
     lineCap?: string;
 }
 
-class LineString extends NodeFixedBounds {
+class LineString<T> extends NodeFixedBounds<T> {
     private points: Array<Point>;
     private strokeStyle: string;
     private lineWidth: number;
@@ -62,7 +62,7 @@ class LineString extends NodeFixedBounds {
         context.lineCap = oldLineCap;
     }
 
-    intersection({x, y}: Point): Node | undefined {
+    intersection({x, y}: Point): Node<T> | undefined {
         const {points, lineWidth} = this;
 
         for (let i = 1; i < points.length; i++) {
