@@ -98,11 +98,11 @@ export default class Stage<T = {}> extends EventEmitter {
         }
     }
 
-    get node(): Node | undefined {
+    get node(): Node<T> | undefined {
         return this.internalNode;
     }
 
-    set node(value: Node | undefined) {
+    set node(value: Node<T> | undefined) {
         this.internalNode = value;
     }
 };

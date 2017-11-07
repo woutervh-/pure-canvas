@@ -18,5 +18,5 @@ export default class Stage<T = {}> extends EventEmitter {
     private handleClick;
     render(): void;
     renderAsynchronous(maxBatchTime?: number): void;
-    node: Node | undefined;
+    node: Node<T> | undefined;
 }
