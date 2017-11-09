@@ -1,11 +1,13 @@
 import { Point } from './Node';
 import NodeFixedBounds from './NodeFixedBounds';
-export interface ImageParameters {
-    x?: number;
-    y?: number;
+export interface ImageStyle {
     width: number;
     height: number;
     image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
+}
+export interface ImageParameters extends ImageStyle {
+    x?: number;
+    y?: number;
 }
 declare class Image<T> extends NodeFixedBounds<T> {
     private x;

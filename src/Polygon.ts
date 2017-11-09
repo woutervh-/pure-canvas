@@ -3,11 +3,14 @@ import NodeFixedBounds from './NodeFixedBounds';
 
 const zeroPoint: Point = {x: 0, y: 0};
 
-export interface PolygonParameters {
-    points: Array<Array<Point>>;
+export interface PolygonStyle {
     strokeStyle?: string;
     lineWidth?: number;
     fillStyle?: string;
+}
+
+export interface PolygonParameters extends PolygonStyle {
+    points: Array<Array<Point>>;
 }
 
 class Polygon<T> extends NodeFixedBounds<T> {

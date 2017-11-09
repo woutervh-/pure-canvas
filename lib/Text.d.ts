@@ -1,8 +1,6 @@
 import { Point } from './Node';
 import NodeFixedBounds from './NodeFixedBounds';
-export interface TextParameters {
-    x?: number;
-    y?: number;
+export interface TextStyle {
     fillStyle?: string;
     fontStyle?: string;
     fontVariant?: string;
@@ -12,6 +10,10 @@ export interface TextParameters {
     textBaseline?: string;
     textAlign?: string;
     text: string;
+}
+export interface TextParameters extends TextStyle {
+    x?: number;
+    y?: number;
 }
 declare class Text<T> extends NodeFixedBounds<T> {
     private x;

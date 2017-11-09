@@ -33,9 +33,7 @@ function getBounds(x: number, y: number, fontStyle: string, fontVariant: string,
     return {minX: x + startX, minY: y + startY, maxX: x + startX + width, maxY: y + startY + fontSize};
 }
 
-export interface TextParameters {
-    x?: number;
-    y?: number;
+export interface TextStyle {
     fillStyle?: string;
     fontStyle?: string;
     fontVariant?: string;
@@ -45,6 +43,11 @@ export interface TextParameters {
     textBaseline?: string;
     textAlign?: string;
     text: string;
+}
+
+export interface TextParameters extends TextStyle {
+    x?: number;
+    y?: number;
 }
 
 class Text<T> extends NodeFixedBounds<T> {

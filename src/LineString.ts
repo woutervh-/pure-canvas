@@ -1,11 +1,14 @@
 import Node, {Bounds, Point} from './Node';
 import NodeFixedBounds from './NodeFixedBounds';
 
-export interface LineStringParameters {
-    points: Array<Point>;
+export interface LineStringStyle {
     strokeStyle?: string;
     lineWidth?: number;
     lineCap?: string;
+}
+
+export interface LineStringParameters extends LineStringStyle {
+    points: Array<Point>;
 }
 
 class LineString<T> extends NodeFixedBounds<T> {

@@ -1,12 +1,14 @@
 import { Point } from './Node';
 import NodeFixedBounds from './NodeFixedBounds';
-export interface CircleParameters {
-    x?: number;
-    y?: number;
+export interface CircleStyle {
     radius: number;
     lineWidth?: number;
     strokeStyle?: string;
     fillStyle?: string;
+}
+export interface CircleParameters extends CircleStyle {
+    x?: number;
+    y?: number;
 }
 declare class Circle<T> extends NodeFixedBounds<T> {
     private x;

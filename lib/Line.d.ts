@@ -1,13 +1,15 @@
 import { Point } from './Node';
 import NodeFixedBounds from './NodeFixedBounds';
-export interface LineParameters {
+export interface LineStyle {
+    strokeStyle?: string;
+    lineWidth?: number;
+    lineCap?: string;
+}
+export interface LineParameters extends LineStyle {
     x1: number;
     y1: number;
     x2: number;
     y2: number;
-    strokeStyle?: string;
-    lineWidth?: number;
-    lineCap?: string;
 }
 declare class Line<T> extends NodeFixedBounds<T> {
     private x1;

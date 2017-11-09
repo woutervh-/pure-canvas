@@ -1,13 +1,15 @@
 import { Point } from './Node';
 import NodeFixedBounds from './NodeFixedBounds';
-export interface RectangleParameters {
+export interface RectangleStyle {
+    strokeStyle?: string;
+    lineWidth?: number;
+    fillStyle?: string;
+}
+export interface RectangleParameters extends RectangleStyle {
     x1: number;
     y1: number;
     x2: number;
     y2: number;
-    strokeStyle?: string;
-    lineWidth?: number;
-    fillStyle?: string;
 }
 declare class Rectangle<T> extends NodeFixedBounds<T> {
     private x1;
