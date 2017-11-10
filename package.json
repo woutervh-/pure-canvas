@@ -1,6 +1,6 @@
 {
   "name": "pure-canvas",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "description": "TODO",
   "main": "lib/Stage.js",
   "types": "lib/Stage.d.ts",
