@@ -29,6 +29,8 @@ abstract class NodeBase<T> implements NodeIndexable<T> {
     abstract isHitEnabled(): boolean;
 
     abstract setHitEnabled(value: boolean): void;
+
+    properties = undefined;
 }
 
 export default NodeBase;
