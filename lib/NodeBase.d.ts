@@ -10,6 +10,6 @@ declare abstract class NodeBase<T> implements NodeIndexable<T> {
     abstract index(action: (node: Node<T>, zIndex: number, transformers: Array<Transformer>) => void, zIndex: number, transformers: Array<Transformer>): number;
     abstract isHitEnabled(): boolean;
     abstract setHitEnabled(value: boolean): void;
-    properties: undefined;
+    properties?: T;
 }
 export default NodeBase;

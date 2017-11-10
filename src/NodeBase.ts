@@ -30,7 +30,7 @@ abstract class NodeBase<T> implements NodeIndexable<T> {
 
     abstract setHitEnabled(value: boolean): void;
 
-    properties = undefined;
+    properties?: T;
 }
 
 export default NodeBase;
