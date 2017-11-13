@@ -19,4 +19,8 @@ export default class Stage<T = {}> extends EventEmitter {
     render(): void;
     renderAsynchronous(maxBatchTime?: number): void;
     node: Node<T> | undefined;
+    on(event: 'mousedown', fn: (getNode: () => Node<T> | undefined, event: MouseEvent) => void, context?: any): this;
+    on(event: 'mousemove', fn: (getNode: () => Node<T> | undefined, event: MouseEvent) => void, context?: any): this;
+    on(event: 'mouseup', fn: (getNode: () => Node<T> | undefined, event: MouseEvent) => void, context?: any): this;
+    on(event: 'click', fn: (getNode: () => Node<T> | undefined, event: MouseEvent) => void, context?: any): this;
 }

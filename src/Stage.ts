@@ -1,4 +1,4 @@
-import {EventEmitter} from 'eventemitter3';
+import {EventEmitter, ListenerFn} from 'eventemitter3';
 import Node from './Node';
 import {getSafeContext} from './util';
 
@@ -105,4 +105,12 @@ export default class Stage<T = {}> extends EventEmitter {
     set node(value: Node<T> | undefined) {
         this.internalNode = value;
     }
+
+    on(event: 'mousedown', fn: (getNode: () => Node<T> | undefined, event: MouseEvent) => void, context?: any): this;
+    on(event: 'mousemove', fn: (getNode: () => Node<T> | undefined, event: MouseEvent) => void, context?: any): this;
+    on(event: 'mouseup', fn: (getNode: () => Node<T> | undefined, event: MouseEvent) => void, context?: any): this;
+    on(event: 'click', fn: (getNode: () => Node<T> | undefined, event: MouseEvent) => void, context?: any): this;
+    on(event: string | symbol, fn: ListenerFn, context?: any): this {
+        return super.on(event, fn, context);
+    };
 };
