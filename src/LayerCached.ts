@@ -20,9 +20,9 @@ export default class LayerCached<T> extends Layer<T> {
 
     private cachedBounds?: Bounds;
 
-    constructor({clipRegion}: {clipRegion?: Bounds} = {}) {
+    constructor(options: {clipRegion?: Bounds} = {}) {
         super();
-        this.clipRegion = clipRegion;
+        this.clipRegion = options.clipRegion;
     }
 
     getBounds(): Bounds {

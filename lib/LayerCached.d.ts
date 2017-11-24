@@ -9,7 +9,7 @@ export default class LayerCached<T> extends Layer<T> {
     private indexFinished;
     private clipRegion?;
     private cachedBounds?;
-    constructor({clipRegion}?: {
+    constructor(options?: {
         clipRegion?: Bounds;
     });
     getBounds(): Bounds;

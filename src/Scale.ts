@@ -6,10 +6,10 @@ export default class Scale<T> extends TransformerBase<T> {
 
     private _y: number;
 
-    constructor({x = 0, y = 0} = {}) {
+    constructor(options: {x: number, y: number} = {x: 0, y: 0}) {
         super();
-        this._x = x;
-        this._y = y;
+        this._x = options.x;
+        this._y = options.y;
     }
 
     preDraw(context: CanvasRenderingContext2D): void {

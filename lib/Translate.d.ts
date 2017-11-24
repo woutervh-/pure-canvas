@@ -3,9 +3,9 @@ import TransformerBase from './TransformerBase';
 export default class Translate<T> extends TransformerBase<T> {
     private _x;
     private _y;
-    constructor({x, y}?: {
-        x?: number;
-        y?: number;
+    constructor(options?: {
+        x: number;
+        y: number;
     });
     preDraw(context: CanvasRenderingContext2D): void;
     postDraw(context: CanvasRenderingContext2D): void;
