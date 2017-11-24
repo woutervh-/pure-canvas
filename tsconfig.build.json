@@ -18,6 +18,7 @@
     "declarationDir": "lib",
     "outDir": "lib",
     "noImplicitAny": true,
+    "noImplicitThis": true,
     "typeRoots": [
       "node_modules/@types"
     ]
