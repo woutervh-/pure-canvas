@@ -48,13 +48,14 @@ export default class LayerCached<T> extends Layer<T> {
         if (this.caching) {
             super.draw(context);
         } else {
+            const {minX, minY, maxX, maxY} = this.getBounds();
             if (!this.cache) {
                 this.caching = true;
                 this.cache = this.toImage();
                 this.caching = false;
+            } else if (maxX - minX > 0 && maxY - minY > 0) {
+                context.drawImage(this.cache, minX, minY, maxX - minX, maxY - minY);
             }
-            const {minX, minY, maxX, maxY} = this.getBounds();
-            context.drawImage(this.cache, minX, minY, maxX - minX, maxY - minY);
         }
     }
 
