@@ -53,8 +53,11 @@ export default class LayerCached<T> extends Layer<T> {
                 this.caching = true;
                 this.cache = this.toImage();
                 this.caching = false;
-            } else if (maxX - minX > 0 && maxY - minY > 0) {
+            }
+            try {
                 context.drawImage(this.cache, minX, minY, maxX - minX, maxY - minY);
+            } catch (error) {
+                // Ignore
             }
         }
     }
