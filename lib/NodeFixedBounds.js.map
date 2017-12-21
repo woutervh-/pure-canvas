@@ -1,1 +1,0 @@
-{"version":3,"file":"NodeFixedBounds.js","sourceRoot":"","sources":["../src/NodeFixedBounds.ts"],"names":[],"mappings":";;AACA,yCAAkC;AAElC,qBAAkC,SAAQ,kBAAW;IAGjD,YAAY,MAAc;QACtB,KAAK,EAAE,CAAC;QACR,IAAI,CAAC,MAAM,GAAG,MAAM,CAAC;IACzB,CAAC;IAED,SAAS;QACL,MAAM,CAAC,IAAI,CAAC,MAAM,CAAC;IACvB,CAAC;CACJ;AAED,kBAAe,eAAe,CAAC"}
