@@ -4,5 +4,8 @@ node_modules/
 # Examples dist/ folder
 dist/
 
+# Build output
+lib/
+
 # Log files
 *.log
