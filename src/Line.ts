@@ -5,6 +5,7 @@ export interface LineStyle {
     strokeStyle?: string;
     lineWidth?: number;
     lineCap?: string;
+    lineDash?: Array<number>;
 }
 
 export interface LineParameters extends LineStyle {
@@ -22,8 +23,9 @@ class Line<T> extends NodeFixedBounds<T> {
     private strokeStyle: string;
     private lineWidth: number;
     private lineCap: string;
+    private lineDash: Array<number>;
 
-    constructor({x1, y1, x2, y2, strokeStyle = 'rgba(0, 0, 0, 1)', lineWidth = 1, lineCap = 'butt'}: LineParameters) {
+    constructor({x1, y1, x2, y2, strokeStyle = 'rgba(0, 0, 0, 1)', lineWidth = 1, lineCap = 'butt', lineDash = []}: LineParameters) {
         const minX = Math.min(x1, x2) - lineWidth / 2;
         const minY = Math.min(y1, y2) - lineWidth / 2;
         const maxX = Math.max(x1, x2) + lineWidth / 2;
@@ -38,42 +40,45 @@ class Line<T> extends NodeFixedBounds<T> {
         this.strokeStyle = strokeStyle;
         this.lineWidth = lineWidth;
         this.lineCap = lineCap;
+        this.lineDash = lineDash;
     }
 
     draw(context: CanvasRenderingContext2D): void {
-        const {x1, y1, x2, y2, strokeStyle, lineWidth, lineCap} = this;
-
         const oldStrokeStyle = context.strokeStyle;
         const oldLineWidth = context.lineWidth;
         const oldLineCap = context.lineCap;
-        context.strokeStyle = strokeStyle;
-        context.lineWidth = lineWidth;
-        context.lineCap = lineCap;
+        const oldLineDash = context.getLineDash();
+        context.strokeStyle = this.strokeStyle;
+        context.lineWidth = this.lineWidth;
+        context.lineCap = this.lineCap;
         context.beginPath();
-        context.moveTo(x1, y1);
-        context.lineTo(x2, y2);
-        if (lineWidth > 0) {
+        context.moveTo(this.x1, this.y1);
+        context.lineTo(this.x2, this.y2);
+        if (this.lineWidth > 0) {
+            context.setLineDash(this.lineDash);
             context.stroke();
         }
         context.closePath();
         context.strokeStyle = oldStrokeStyle;
         context.lineWidth = oldLineWidth;
         context.lineCap = oldLineCap;
+        if (this.lineWidth > 0) {
+            context.setLineDash(oldLineDash);
+        }
     }
 
     intersection({x, y}: Point): Line<T> | undefined {
-        const {x1, y1, x2, y2, lineWidth} = this;
-        const distance2 = (x2 - x1) ** 2 + (y2 - y1) ** 2;
+        const distance2 = (this.x2 - this.x1) ** 2 + (this.y2 - this.y1) ** 2;
         let t: number;
         if (distance2 === 0) {
             t = 0;
         } else {
-            t = ((x - x1) * (x2 - x1) + (y - y1) * (y2 - y1)) / distance2;
+            t = ((x - this.x1) * (this.x2 - this.x1) + (y - this.y1) * (this.y2 - this.y1)) / distance2;
         }
         if (0 <= t && t <= 1) {
-            const dx = x - (x1 + t * (x2 - x1));
-            const dy = y - (y1 + t * (y2 - y1));
-            if (dx ** 2 + dy ** 2 <= (lineWidth / 2) ** 2) {
+            const dx = x - (this.x1 + t * (this.x2 - this.x1));
+            const dy = y - (this.y1 + t * (this.y2 - this.y1));
+            if (dx ** 2 + dy ** 2 <= (this.lineWidth / 2) ** 2) {
                 return this;
             }
         }

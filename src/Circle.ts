@@ -6,6 +6,7 @@ export interface CircleStyle {
     lineWidth?: number;
     strokeStyle?: string;
     fillStyle?: string;
+    lineDash?: Array<number>;
 }
 
 export interface CircleParameters extends CircleStyle {
@@ -20,8 +21,9 @@ class Circle<T> extends NodeFixedBounds<T> {
     private lineWidth: number;
     private strokeStyle: string;
     private fillStyle: string;
+    private lineDash: Array<number>;
 
-    constructor({x = 0, y = 0, radius, lineWidth = 1, strokeStyle = 'rgba(0, 0, 0, 1)', fillStyle = 'rgba(255, 255, 255, 1)'}: CircleParameters) {
+    constructor({x = 0, y = 0, radius, lineWidth = 1, strokeStyle = 'rgba(0, 0, 0, 1)', fillStyle = 'rgba(255, 255, 255, 1)', lineDash = []}: CircleParameters) {
         const minX = x - radius - lineWidth / 2;
         const minY = y - radius - lineWidth / 2;
         const maxX = x + radius + lineWidth / 2;
@@ -35,31 +37,35 @@ class Circle<T> extends NodeFixedBounds<T> {
         this.lineWidth = lineWidth;
         this.strokeStyle = strokeStyle;
         this.fillStyle = fillStyle;
+        this.lineDash = lineDash;
     }
 
     draw(context: CanvasRenderingContext2D): void {
-        const {x, y, radius, strokeStyle, lineWidth, fillStyle} = this;
         const oldStrokeStyle = context.strokeStyle;
         const oldFillStyle = context.fillStyle;
         const oldLineWidth = context.lineWidth;
+        const oldLineDash = context.getLineDash();
         context.beginPath();
-        context.arc(x, y, radius, 0, 2 * Math.PI, false);
-        context.strokeStyle = strokeStyle;
-        context.fillStyle = fillStyle;
-        context.lineWidth = lineWidth;
+        context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
+        context.strokeStyle = this.strokeStyle;
+        context.fillStyle = this.fillStyle;
+        context.lineWidth = this.lineWidth;
         context.fill();
-        if (lineWidth > 0) {
+        if (this.lineWidth > 0) {
+            context.setLineDash(this.lineDash);
             context.stroke();
         }
         context.closePath();
         context.strokeStyle = oldStrokeStyle;
         context.fillStyle = oldFillStyle;
         context.lineWidth = oldLineWidth;
+        if (this.lineWidth > 0) {
+            context.setLineDash(oldLineDash);
+        }
     }
 
     intersection({x, y}: Point): Circle<T> | undefined {
-        const {x: ox, y: oy, radius, lineWidth} = this;
-        if ((x - ox) ** 2 + (y - oy) ** 2 <= (radius + lineWidth / 2) ** 2) {
+        if ((x - this.x) ** 2 + (y - this.y) ** 2 <= (this.radius + this.lineWidth / 2) ** 2) {
             return this;
         }
     }

@@ -7,6 +7,7 @@ export interface PolygonStyle {
     strokeStyle?: string;
     lineWidth?: number;
     fillStyle?: string;
+    lineDash?: Array<number>;
 }
 
 export interface PolygonParameters extends PolygonStyle {
@@ -18,8 +19,9 @@ class Polygon<T> extends NodeFixedBounds<T> {
     private strokeStyle: string;
     private lineWidth: number;
     private fillStyle: string;
+    private lineDash: Array<number>;
 
-    constructor({points, strokeStyle = 'rgba(0, 0, 0, 1)', lineWidth = 1, fillStyle = 'rgba(255, 255, 255, 1)'}: PolygonParameters) {
+    constructor({points, strokeStyle = 'rgba(0, 0, 0, 1)', lineWidth = 1, fillStyle = 'rgba(255, 255, 255, 1)', lineDash = []}: PolygonParameters) {
         // TODO: lineWidth to increase bounds
 
         let minX = Number.POSITIVE_INFINITY;
@@ -42,56 +44,59 @@ class Polygon<T> extends NodeFixedBounds<T> {
         this.strokeStyle = strokeStyle;
         this.lineWidth = lineWidth;
         this.fillStyle = fillStyle;
+        this.lineDash = lineDash;
     }
 
     draw(context: CanvasRenderingContext2D): void {
-        const {points, strokeStyle, lineWidth, fillStyle} = this;
-
         const oldStrokeStyle = context.strokeStyle;
         const oldLineWidth = context.lineWidth;
         const oldFillStyle = context.fillStyle;
-        context.strokeStyle = strokeStyle;
-        context.lineWidth = lineWidth;
-        context.fillStyle = fillStyle;
+        const oldLineDash = context.getLineDash();
+        context.strokeStyle = this.strokeStyle;
+        context.lineWidth = this.lineWidth;
+        context.fillStyle = this.fillStyle;
 
         context.beginPath();
-        for (let i = 0; i < points.length; i++) {
+        for (let i = 0; i < this.points.length; i++) {
             // TODO:
             // Given an option 'automaticCounterHoles' => automatically reverse the 2nd, 3rd, 4th, etc. polygons
             // For now just force API user to make sure holes are in counter-clockwise direction
-            if (points[i].length >= 1) {
-                const {x, y} = points[i][0];
+            if (this.points[i].length >= 1) {
+                const {x, y} = this.points[i][0];
                 context.moveTo(x, y);
             }
-            for (let j = 1; j < points[i].length; j++) {
-                const {x, y} = points[i][j];
+            for (let j = 1; j < this.points[i].length; j++) {
+                const {x, y} = this.points[i][j];
                 context.lineTo(x, y);
             }
             context.closePath();
         }
         context.fill();
-        if (lineWidth > 0) {
+        if (this.lineWidth > 0) {
+            context.setLineDash(this.lineDash);
             context.stroke();
         }
 
         context.strokeStyle = oldStrokeStyle;
         context.lineWidth = oldLineWidth;
         context.fillStyle = oldFillStyle;
+        if (this.lineWidth > 0) {
+            context.setLineDash(oldLineDash);
+        }
     }
 
     intersection({x, y}: Point): Polygon<T> | undefined {
-        const {points, lineWidth} = this;
         const vertices: Array<Point> = [];
 
         // TODO: algorithm should take lineWidth into account
 
         vertices.push(zeroPoint);
-        for (let i = 0; i < points.length; i++) {
-            for (let j = 0; j < points[i].length; j++) {
-                vertices.push(points[i][j]);
+        for (let i = 0; i < this.points.length; i++) {
+            for (let j = 0; j < this.points[i].length; j++) {
+                vertices.push(this.points[i][j]);
             }
-            if (points[i].length >= 1) {
-                vertices.push(points[i][0]);
+            if (this.points[i].length >= 1) {
+                vertices.push(this.points[i][0]);
             }
             vertices.push(zeroPoint);
         }
