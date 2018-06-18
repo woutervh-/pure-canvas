@@ -1,9 +1,9 @@
-import Node, {Point, Bounds} from './Node';
+import Node, { Point, Bounds } from './Node';
 import Layer from './Layer';
 import TreeManager from './TreeManager';
 import Transformer from './Transformer';
 import NodeIndexable from './NodeIndexable';
-import {getSafeContext} from './util';
+import { getSafeContext } from './util';
 
 export default class LayerCached<T> extends Layer<T> {
     private caching: boolean = false;
@@ -20,7 +20,7 @@ export default class LayerCached<T> extends Layer<T> {
 
     private cachedBounds?: Bounds;
 
-    constructor(options: {clipRegion?: Bounds} = {}) {
+    constructor(options: { clipRegion?: Bounds } = {}) {
         super();
         this.clipRegion = options.clipRegion;
     }
@@ -48,7 +48,7 @@ export default class LayerCached<T> extends Layer<T> {
         if (this.caching) {
             super.draw(context);
         } else {
-            const {minX, minY, maxX, maxY} = this.getBounds();
+            const { minX, minY, maxX, maxY } = this.getBounds();
             if (!this.cache) {
                 this.caching = true;
                 this.cache = this.toImage();
@@ -64,7 +64,7 @@ export default class LayerCached<T> extends Layer<T> {
 
     steps(): (context?: CanvasRenderingContext2D) => boolean {
         if (!this.generator) {
-            const {minX, minY, maxX, maxY} = this.getBounds();
+            const { minX, minY, maxX, maxY } = this.getBounds();
             const width = maxX - minX;
             const height = maxY - minY;
             const cache = document.createElement('canvas');
@@ -87,7 +87,11 @@ export default class LayerCached<T> extends Layer<T> {
             this.generator = (context) => {
                 if (this.cache) {
                     if (context) {
-                        context.drawImage(this.cache, minX, minY, width, height);
+                        try {
+                            context.drawImage(this.cache, minX, minY, width, height);
+                        } catch (error) {
+                            // Ignore
+                        }
                     }
                     return true;
                 } else {
