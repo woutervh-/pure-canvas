@@ -96,7 +96,11 @@ export default class LayerCached<T> extends Layer<T> {
                     return true;
                 } else {
                     if (context) {
-                        context.drawImage(cache, minX, minY, width, height);
+                        try {
+                            context.drawImage(cache, minX, minY, width, height);
+                        } catch (error) {
+                            // Ignore
+                        }
                     } else {
                         if (!next) {
                             if (first) {
