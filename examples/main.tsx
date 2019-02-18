@@ -17,6 +17,7 @@ import * as triangle from './triangle.svg';
 import Layer from '../src/Layer';
 import LayerCached from '../src/LayerCached';
 import NodeIndexable from '../src/NodeIndexable';
+import Arc from '../src/Arc';
 
 function getRandomColor() {
     return colors[Math.floor(Math.random() * colors.length)];
@@ -54,6 +55,21 @@ class App extends React.Component<{}, {}> {
                     circle.setHitEnabled(true);
                     yield circle;
                 }
+
+                for (let i = 0; i < 1e2; i++) {
+                    const arc = new Arc({
+                        x: Math.random() * 800,
+                        y: Math.random() * 800,
+                        radius: 8,
+                        fillStyle: getRandomColor(),
+                        startAngle: Math.random() * Math.PI * 2,
+                        endAngle: Math.random() * Math.PI * 2,
+                        closed: Math.random() > 0.5,
+                        counterClockwise: Math.random() > 0.5
+                    });
+                    arc.setHitEnabled(true);
+                    yield arc;
+                }
             }
 
             cachedLayer.setChildren({[Symbol.iterator]: () => childrenGenerator()});
@@ -68,6 +84,11 @@ class App extends React.Component<{}, {}> {
                 const node = getNode();
                 if (node) {
                     if (node instanceof Circle) {
+                        hoverLayer.x = (node as any).x / 2;
+                        hoverLayer.y = (node as any).y / 2;
+                        hoverLayer.setChildren([hoverCircle]);
+                    }
+                    if (node instanceof Arc) {
                         hoverLayer.x = (node as any).x / 2;
                         hoverLayer.y = (node as any).y / 2;
                         hoverLayer.setChildren([hoverCircle]);
